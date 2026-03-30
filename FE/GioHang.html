@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer - N9 | Giỏ hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/GioHang.css">
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Cart Header -->
+        <div class="cart-header">
+            <div class="cart-title">
+                <i class="fas fa-shopping-cart"></i>
+                Giỏ hàng của bạn
+                <span class="cart-count-badge" id="cart-count">5 sản phẩm</span>
+            </div>
+            <div class="continue-shopping" onclick="continueShopping()">
+                <i class="fas fa-arrow-left"></i>
+                Tiếp tục mua sắm
+            </div>
+        </div>
+
+        <!-- Cart Container -->
+        <div class="cart-container">
+            <!-- Cart Items Section -->
+            <div class="cart-items">
+                <div class="cart-items-header">
+                    <label class="select-all">
+                        <input type="checkbox" class="select-all-checkbox" id="select-all" checked onchange="toggleSelectAll()">
+                        <span>Chọn tất cả (5 sản phẩm)</span>
+                    </label>
+                    <div class="delete-selected" onclick="deleteSelected()">
+                        <i class="fas fa-trash-alt"></i>
+                        Xóa đã chọn
+                    </div>
+                </div>
+
+                <div class="cart-items-body" id="cart-items-body">
+                    <!-- Cart items will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+                <h3 class="summary-title">
+                    <i class="fas fa-calculator"></i>
+                    Tổng cộng
+                </h3>
+
+                <div class="summary-row">
+                    <span>Tạm tính (5 sản phẩm):</span>
+                    <span id="subtotal">53.050.000₫</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Giảm giá:</span>
+                    <span id="discount-amount">-5.000.000₫</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span id="shipping">Miễn phí</span>
+                </div>
+
+                <div class="discount-input">
+                    <input type="text" placeholder="Mã giảm giá" id="discount-code">
+                    <button class="apply-btn" onclick="applyDiscount()">Áp dụng</button>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Tổng thanh toán:</span>
+                    <span id="total">48.050.000₫</span>
+                </div>
+
+                <button class="checkout-btn" onclick="checkout()">
+                    <i class="fas fa-lock"></i>
+                    Thanh toán ngay
+                </button>
+
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa" title="Visa"></i>
+                    <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                    <i class="fab fa-cc-paypal" title="PayPal"></i>
+                    <i class="fas fa-credit-card" title="Thẻ tín dụng"></i>
+                    <i class="fas fa-money-bill-wave" title="Tiền mặt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="JS/layout.js"></script>
+    <script src="JS/GioHang.js"></script>
+</body>
+</html>

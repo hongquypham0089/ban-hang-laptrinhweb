@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer - N9 | Gaming Gear & PC Components</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/TrangChu.css">
+</head>
+<body>
+    <div id="particles-container"></div>
+    
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="logo-text">Computer - N9</div>
+                </a>
+                
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="/" class="nav-item">Trang chủ</a></li>
+                        <li class="nav-item">
+                            Danh mục
+                            <ul class="dropdown-menu">
+                                <li><a href="/category/tai-nghe" class="dropdown-item"><i class="fas fa-headphones"></i> Tai nghe Gaming</a></li>
+                                <li><a href="/category/chuot" class="dropdown-item"><i class="fas fa-mouse"></i> Chuột chuyên game</a></li>
+                                <li><a href="/category/ban-phim" class="dropdown-item"><i class="fas fa-keyboard"></i> Bàn phím cơ</a></li>
+                                <li><a href="/category/pc" class="dropdown-item"><i class="fas fa-desktop"></i> PC Gaming</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/promotion" class="nav-item">Khuyến mãi</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header-icons">
+                    <div class="icon-btn" id="notification-btn"><i class="fas fa-bell"></i></div>
+                    <a href="/cart" class="icon-btn" id="cart-btn" style="text-decoration: none; color: inherit;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    <a href="/user" class="icon-btn" id="user-btn" title="Tài khoản cá nhân" style="text-decoration: none; color: inherit;">
+                        <% if (typeof user !== 'undefined' && user.avatar) { %>
+                            <img src="<%= user.avatar %>" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                        <% } else { %>
+                            <i class="fas fa-user"></i>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="container">
+                <form action="/search" method="GET" class="search-box">
+                    <input type="text" name="q" class="search-input" placeholder="Tìm kiếm sản phẩm...">
+                    <button type="submit" class="search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
+                </form>
+            </div>
+        </div>
+    </header>

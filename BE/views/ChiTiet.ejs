@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="product-detail-container">
+            <div class="product-main">
+                <div class="product-images">
+                    <div class="main-image-container">
+                        <div class="image-badge">BEST SELLER</div>
+                        <img id="main-image" class="main-image" src="<%= product.image || 'https://via.placeholder.com/800x500' %>" alt="<%= product.name %>">
+                    </div>
+                    
+                    <div class="thumbnail-images">
+                        <div class="thumbnail active" data-image="<%= product.image %>">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        </div>
+                </div>
+                
+                <div class="product-info">
+                    <div class="product-highlights">
+                        <h3><i class="fas fa-bolt"></i> THÔNG TIN NỔI BẬT</h3>
+                        <div class="highlights-list">
+                            <% if (product.highlights) { %>
+                                <% product.highlights.forEach(item => { %>
+                                    <div class="highlight-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span><%= item %></span>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="highlight-item"><i class="fas fa-check-circle"></i> <span>Cấu hình đỉnh cao</span></div>
+                                <div class="highlight-item"><i class="fas fa-check-circle"></i> <span>Bảo hành chính hãng</span></div>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <div class="purchase-section">
+                        <div class="product-name-code">
+                            <h1 class="product-name"><%= product.name %></h1>
+                            <p class="product-code">Mã sản phẩm: <span>#<%= product.id || 'N9-PRO' %></span></p>
+                        </div>
+                        
+                        <div class="rating-section">
+                            <div class="stars">★★★★★</div>
+                            <div class="rating-count">
+                                <span>4.8/5</span> (128 đánh giá)
+                            </div>
+                        </div>
+                        
+                        <div class="variant-selection">
+                            <h4 class="variant-title">Chọn phiên bản:</h4>
+                            <div class="variant-options">
+                                <button class="variant-btn active">Tiêu chuẩn</button>
+                                <button class="variant-btn">Nâng cấp RAM</button>
+                            </div>
+                        </div>
+                        
+                        <div class="price-section">
+                            <div class="current-price"><%= product.price.toLocaleString('vi-VN') %> ₫</div>
+                            <% if (product.oldPrice) { %>
+                                <div>
+                                    <span class="old-price"><%= product.oldPrice.toLocaleString('vi-VN') %> ₫</span>
+                                    <span class="discount-badge">-11%</span>
+                                </div>
+                            <% } %>
+                            <div class="reward-points">
+                                <i class="fas fa-gem"></i>
+                                <span>Tích lũy điểm SMEMBER hấp dẫn</span>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="buy-now-btn">
+                                <i class="fas fa-bolt"></i> MUA NGAY
+                            </button>
+                            <button class="add-to-cart-btn" onclick="addToCart('<%= product.id %>')">
+                                <i class="fas fa-cart-plus"></i> THÊM VÀO GIỎ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-description">
+                <h2 class="section-title"><i class="fas fa-file-alt"></i> MÔ TẢ SẢN PHẨM</h2>
+                <div class="description-content">
+                    <p><%= product.description || 'Thông tin chi tiết đang được cập nhật...' %></p>
+                </div>
+            </div>
+            
+            <div class="specifications">
+                <h2 class="section-title"><i class="fas fa-microchip"></i> THÔNG SỐ KỸ THUẬT</h2>
+                <table class="specs-table">
+                    <% if (product.specs) { %>
+                        <% Object.keys(product.specs).forEach(key => { %>
+                            <tr>
+                                <td><%= key %></td>
+                                <td><%= product.specs[key] %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr><td>Đang cập nhật...</td></tr>
+                    <% } %>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<link rel="stylesheet" href="/CSS/ChiTiet.css">
+<script src="/JS/ChiTiet.js"></script>
+
+<%- include('partials/footer') %>

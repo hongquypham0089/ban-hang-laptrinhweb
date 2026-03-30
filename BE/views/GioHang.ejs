@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="cart-header">
+            <div class="cart-title">
+                <i class="fas fa-shopping-cart"></i>
+                Giỏ hàng của bạn
+                <span class="cart-count-badge" id="cart-count">
+                    <%= cart && cart.items ? cart.items.length : 0 %> sản phẩm
+                </span>
+            </div>
+            <a href="/" class="continue-shopping" style="text-decoration: none; color: inherit;">
+                <i class="fas fa-arrow-left"></i>
+                Tiếp tục mua sắm
+            </a>
+        </div>
+
+        <div class="cart-container">
+            <div class="cart-items">
+                <div class="cart-items-header">
+                    <label class="select-all">
+                        <input type="checkbox" class="select-all-checkbox" id="select-all" checked onchange="toggleSelectAll()">
+                        <span>Chọn tất cả</span>
+                    </label>
+                    <div class="delete-selected" onclick="deleteSelected()" style="cursor: pointer;">
+                        <i class="fas fa-trash-alt"></i>
+                        Xóa đã chọn
+                    </div>
+                </div>
+
+                <div class="cart-items-body" id="cart-items-body">
+                    <% if (cart && cart.items && cart.items.length > 0) { %>
+                        <% cart.items.forEach(item => { %>
+                            <div class="cart-item" data-id="<%= item.id %>">
+                                <input type="checkbox" class="item-checkbox" checked>
+                                <div class="item-image">
+                                    <img src="<%= item.image %>" alt="<%= item.name %>">
+                                </div>
+                                <div class="item-details">
+                                    <h4 class="item-name"><%= item.name %></h4>
+                                    <p class="item-variant">Phân loại: <%= item.variant || 'Tiêu chuẩn' %></p>
+                                    <div class="item-price-mobile"><%= item.price.toLocaleString('vi-VN') %>₫</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <button class="qty-btn minus" onclick="updateQty('<%= item.id %>', -1)">-</button>
+                                    <input type="number" value="<%= item.quantity %>" min="1" readonly>
+                                    <button class="qty-btn plus" onclick="updateQty('<%= item.id %>', 1)">+</button>
+                                </div>
+                                <div class="item-price">
+                                    <span class="current-price"><%= (item.price * item.quantity).toLocaleString('vi-VN') %>₫</span>
+                                </div>
+                                <div class="item-delete" onclick="removeItem('<%= item.id %>')">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="empty-cart" style="text-align: center; padding: 50px;">
+                            <i class="fas fa-shopping-basket" style="font-size: 4rem; color: var(--neon-blue); opacity: 0.5;"></i>
+                            <p style="margin-top: 20px; font-family: 'Orbitron', sans-serif;">Giỏ hàng của bạn đang trống</p>
+                            <a href="/" class="btn" style="display: inline-block; margin-top: 20px; padding: 10px 20px;">Mua sắm ngay</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <h3 class="summary-title">
+                    <i class="fas fa-calculator"></i>
+                    Tổng cộng
+                </h3>
+
+                <div class="summary-row">
+                    <span>Tạm tính:</span>
+                    <span id="subtotal"><%= (cart ? cart.subtotal : 0).toLocaleString('vi-VN') %>₫</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Giảm giá:</span>
+                    <span id="discount-amount">-<%= (cart ? cart.discount : 0).toLocaleString('vi-VN') %>₫</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span id="shipping">Miễn phí</span>
+                </div>
+
+                <div class="discount-input">
+                    <input type="text" placeholder="Mã giảm giá" id="discount-code">
+                    <button class="apply-btn" onclick="applyDiscount()">Áp dụng</button>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Tổng thanh toán:</span>
+                    <span id="total"><%= (cart ? cart.total : 0).toLocaleString('vi-VN') %>₫</span>
+                </div>
+
+                <button class="checkout-btn" onclick="checkout()">
+                    <i class="fas fa-lock"></i>
+                    Thanh toán ngay
+                </button>
+
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa" title="Visa"></i>
+                    <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                    <i class="fab fa-cc-paypal" title="PayPal"></i>
+                    <i class="fas fa-money-bill-wave" title="Tiền mặt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<link rel="stylesheet" href="/CSS/GioHang.css">
+<script src="/JS/GioHang.js"></script>
+
+<%- include('partials/footer') %>
