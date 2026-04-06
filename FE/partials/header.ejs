@@ -7,7 +7,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/CSS/TrangChu.css">
+    <script src="/JS/User.js"></script>
+
+    <style>
+        /* Avatar header */
+        .icon-btn img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00f3ff;
+            box-shadow: 0 0 10px #00f3ff;
+            transition: 0.3s;
+        }
+
+        .icon-btn img:hover {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
+
 <body>
     <div id="particles-container"></div>
     
@@ -38,18 +57,40 @@
                 </nav>
                 
                 <div class="header-icons">
-                    <div class="icon-btn" id="notification-btn"><i class="fas fa-bell"></i></div>
+                    <div class="icon-btn" id="notification-btn">
+                        <i class="fas fa-bell"></i>
+                    </div>
+
                     <a href="/cart" class="icon-btn" id="cart-btn" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
                     </a>
-                    <a href="/user" class="icon-btn" id="user-btn" title="Tài khoản cá nhân" style="text-decoration: none; color: inherit;">
-                        <% if (typeof user !== 'undefined' && user.avatar) { %>
-                            <img src="<%= user.avatar %>" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
-                        <% } else { %>
+
+                    <!-- USER -->
+                    <% if (user) { %>
+                        <a href="/user" 
+                        class="icon-btn" 
+                        title="<%= user.TenNguoiDung || 'User' %>" 
+                        style="text-decoration: none; color: inherit;">
+                            
+                            <% if (user.avatar) { %>
+                                <img src="<%= user.avatar %>" alt="Avatar" id="header-avatar-img">
+                                <i class="fas fa-user-check" id="header-avatar-icon" style="display: none; color: #4CAF50;"></i>
+                            <% } else { %>
+                                <img src="" alt="Avatar" id="header-avatar-img" style="display: none;">
+                                <i class="fas fa-user-check" id="header-avatar-icon" style="color: #4CAF50;"></i>
+                            <% } %>
+
+                        </a>
+                    <% } else { %>
+                        <a href="/dangnhap" 
+                        class="icon-btn" 
+                        title="Đăng nhập" 
+                        style="text-decoration: none; color: inherit;">
                             <i class="fas fa-user"></i>
-                        <% } %>
-                    </a>
+                        </a>
+                    <% } %>
+
                 </div>
             </div>
         </div>
@@ -58,7 +99,9 @@
             <div class="container">
                 <form action="/search" method="GET" class="search-box">
                     <input type="text" name="q" class="search-input" placeholder="Tìm kiếm sản phẩm...">
-                    <button type="submit" class="search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
                 </form>
             </div>
         </div>

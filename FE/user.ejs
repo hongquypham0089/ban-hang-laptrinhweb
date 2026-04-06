@@ -7,33 +7,26 @@
                 <div class="user-profile">
                     <div class="avatar-container">
                         <div class="avatar">
-                            <% if (user && user.avatar) { %>
-                                <img src="<%= user.avatar %>" alt="Avatar" id="user-avatar-img">
-                            <% } else { %>
-                                <i class="fas fa-user"></i>
-                            <% } %>
+                            <img src="" alt="Avatar" id="user-avatar-img">
+                            <i class="fas fa-user" id="default-avatar-icon"></i>
                         </div>
                         <div class="avatar-badge" onclick="document.getElementById('avatar-input').click()">
                             <i class="fas fa-camera"></i>
                         </div>
                         <input type="file" id="avatar-input" hidden accept="image/*" onchange="uploadAvatar(this)">
                     </div>
-                    <h2 class="user-name"><%= user ? user.fullname : 'Khách' %></h2>
-                    <p class="user-email"><%= user ? user.email : '' %></p>
-                    <span class="member-badge">SMEMBER <%= user ? user.rank.toUpperCase() : 'BRONZE' %></span>
+                    <h2 class="user-name">Đang tải...</h2>
+                    <p class="user-email">Đang tải...</p>
+                    <span class="member-badge">SMEMBER</span>
                 </div>
 
                 <div class="user-stats">
                     <div class="stat-item">
-                        <div class="stat-value"><%= stats.totalOrders %></div>
+                        <div class="stat-value" id="sidebar-total-orders">0</div>
                         <div class="stat-label">Đơn hàng</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value"><%= stats.wishlistCount %></div>
-                        <div class="stat-label">Yêu thích</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value"><%= user ? user.points : 0 %></div>
+                        <div class="stat-value" id="sidebar-points">0</div>
                         <div class="stat-label">Điểm</div>
                     </div>
                 </div>
@@ -50,25 +43,7 @@
                     <div class="menu-item" data-tab="orders">
                         <i class="fas fa-shopping-bag"></i>
                         <span>Đơn hàng của tôi</span>
-                        <% if (stats.pendingOrders > 0) { %>
-                            <span class="badge"><%= stats.pendingOrders %></span>
-                        <% } %>
-                    </div>
-                    <div class="menu-item" data-tab="addresses">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Sổ địa chỉ</span>
-                    </div>
-                    <div class="menu-item" data-tab="wishlist">
-                        <i class="fas fa-heart"></i>
-                        <span>Yêu thích</span>
-                    </div>
-                    <div class="menu-item" data-tab="rewards">
-                        <i class="fas fa-gem"></i>
-                        <span>Điểm thưởng</span>
-                    </div>
-                    <div class="menu-item" data-tab="settings">
-                        <i class="fas fa-cog"></i>
-                        <span>Cài đặt</span>
+                        <span class="badge" id="menu-pending-orders" style="display: none;">0</span>
                     </div>
                 </div>
             </div>
@@ -90,42 +65,23 @@
                         <div class="dashboard-grid">
                             <div class="dashboard-card">
                                 <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
-                                <div class="card-value"><%= stats.totalOrders %></div>
+                                <div class="card-value" id="card-total-orders">0</div>
                                 <div class="card-label">Tổng đơn hàng</div>
                             </div>
                             <div class="dashboard-card">
                                 <div class="card-icon"><i class="fas fa-truck"></i></div>
-                                <div class="card-value"><%= stats.shippingOrders %></div>
+                                <div class="card-value" id="card-shipping-orders">0</div>
                                 <div class="card-label">Đang giao</div>
                             </div>
                             <div class="dashboard-card">
                                 <div class="card-icon"><i class="fas fa-check-circle"></i></div>
-                                <div class="card-value"><%= stats.deliveredOrders %></div>
+                                <div class="card-value" id="card-delivered-orders">0</div>
                                 <div class="card-label">Đã giao</div>
                             </div>
                         </div>
 
                         <div class="recent-orders">
-                            <h3 class="section-title">
-                                <i class="fas fa-history"></i> Đơn hàng gần đây
-                            </h3>
-                            <% if (recentOrders && recentOrders.length > 0) { %>
-                                <% recentOrders.forEach(order => { %>
-                                    <div class="order-item" onclick="viewOrder('<%= order.id %>')">
-                                        <div class="order-img"><i class="fas fa-box"></i></div>
-                                        <div class="order-info">
-                                            <div class="order-name">Đơn hàng <%= order.id %></div>
-                                            <div class="order-meta">
-                                                <span>Ngày: <%= order.date %></span>
-                                            </div>
-                                        </div>
-                                        <div class="order-status status-<%= order.statusClass %>"><%= order.statusText %></div>
-                                        <div class="order-price"><%= order.total.toLocaleString('vi-VN') %>₫</div>
-                                    </div>
-                                <% }) %>
-                            <% } else { %>
-                                <p style="text-align: center; opacity: 0.6;">Bạn chưa có đơn hàng nào.</p>
-                            <% } %>
+                            <p style="text-align: center; opacity: 0.6;">Đang tải danh sách đơn hàng...</p>
                         </div>
                     </div>
 
@@ -135,22 +91,26 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Họ và tên</label>
-                                    <input type="text" name="fullname" class="form-input" value="<%= user.fullname %>">
+                                    <input type="text" id="profile-fullname" name="fullname" class="form-input" value="">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Ngày sinh</label>
-                                    <input type="date" name="birthday" class="form-input" value="<%= user.birthday %>">
+                                    <input type="date" id="profile-birthday" name="birthday" class="form-input" value="">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-input readonly" value="<%= user.email %>" readonly>
+                                    <input type="email" id="profile-email" class="form-input readonly" value="" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Số điện thoại</label>
-                                    <input type="tel" name="phone" class="form-input" value="<%= user.phone %>">
+                                    <input type="tel" id="profile-phone" name="phone" class="form-input" value="">
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" id="profile-address" name="address" class="form-input" value="">
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                         </form>

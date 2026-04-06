@@ -54,7 +54,11 @@
         }
         // Format price with dots as thousand separators
         function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+            // Ép kiểu giá trị về số nguyên (cắt bỏ hoàn toàn phần thập phân .00)
+            const numericPrice = Math.round(Number(price)) || 0;
+            
+            // Format theo chuẩn tiền tệ Việt Nam (ví dụ: 15.000.000 đ)
+            return numericPrice.toLocaleString('vi-VN') + ' đ';
         }
 
         function loadProducts() {

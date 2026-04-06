@@ -1,181 +1,378 @@
+// Thêm vào đầu file User.js - các hàm gọi API
 
-        // Tab switching functionality
-        const menuItems = document.querySelectorAll('.menu-item');
-        const pageTitle = document.getElementById('page-title');
-
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove active class from all menu items
-                menuItems.forEach(mi => mi.classList.remove('active'));
-                
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Hide all tab panes
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('active');
-                });
-                
-                // Show selected tab pane
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
-                
-                // Update page title
-                const tabName = this.querySelector('span').textContent;
-                pageTitle.textContent = tabName;
-                
-                // Play sound effect
-                playSoundEffect('click');
-            });
-        });
-
-        // Show notification function
-        function showNotification(message, type = 'success') {
-            // Remove existing notifications
-            const existingNotifications = document.querySelectorAll('.notification');
-            existingNotifications.forEach(notification => notification.remove());
-
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+// Lấy thông tin người dùng khi load trang
+async function loadUserData() {
+    try {
+        // Lấy thông tin profile
+        const profileRes = await fetch('/api/user/profile');
+        const profileData = await profileRes.json();
+        
+        if (profileData.success) {
+            const user = profileData.data;
             
-            let icon = '';
-            if (type === 'success') icon = '<i class="fas fa-check-circle"></i> ';
-            else if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i> ';
-            else if (type === 'info') icon = '<i class="fas fa-info-circle"></i> ';
-            
-            notification.innerHTML = icon + message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'fadeOut 0.5s ease';
-                    setTimeout(() => notification.remove(), 500);
+            // --- 1. CẬP NHẬT HEADER (Chạy trên mọi trang vì trang nào cũng có Header) ---
+            if (user.avatar) {
+                const headerAvatarImg = document.getElementById('header-avatar-img');
+                const headerAvatarIcon = document.getElementById('header-avatar-icon');
+                if (headerAvatarImg) {
+                    headerAvatarImg.src = user.avatar;
+                    headerAvatarImg.style.display = 'inline-block';
                 }
-            }, 3000);
-        }
+                if (headerAvatarIcon) {
+                    headerAvatarIcon.style.display = 'none';
+                }
+            }
 
-        // Save profile function
-        function saveProfile() {
-            const fullname = document.getElementById('fullname').value;
-            const birthday = document.getElementById('birthday').value;
-            const phone = document.getElementById('phone').value;
-            const gender = document.getElementById('gender').value;
+            // --- 2. CẬP NHẬT TRANG USER (Chỉ chạy khi đang ở trang User) ---
+            const userNameEl = document.querySelector('.user-name');
+            if (userNameEl) { 
+                // Nếu tìm thấy class này -> Chắc chắn đang ở trang User
+                userNameEl.textContent = user.tenNguoiDung || user.tenTaiKhoan;
+                
+                const userEmailEl = document.querySelector('.user-email');
+                if (userEmailEl) userEmailEl.textContent = user.email;
+                
+                // Xử lý Form Profile
+                const elFullname = document.querySelector('#profile-fullname');
+                const elBirthday = document.querySelector('#profile-birthday');
+                const elPhone = document.querySelector('#profile-phone');
+                const elAddress = document.querySelector('#profile-address');
+                const elEmail = document.querySelector('#profile-email');
+
+                if(elFullname) elFullname.value = user.tenNguoiDung || '';
+                if(elPhone) elPhone.value = user.soDienThoai || '';
+                if(elAddress) elAddress.value = user.diaChi || '';
+                if(elEmail) elEmail.value = user.email || '';
+                
+                // Định dạng lại ngày sinh
+                if (elBirthday && user.ngaySinh) {
+                    const date = new Date(user.ngaySinh);
+                    elBirthday.value = date.toISOString().split('T')[0];
+                }
+
+                // Xử lý Avatar ở giữa trang
+                if (user.avatar) {
+                    const userAvatarImg = document.getElementById('user-avatar-img');
+                    const defaultAvatarIcon = document.getElementById('default-avatar-icon');
+                    if (userAvatarImg) {
+                        userAvatarImg.src = user.avatar;
+                        userAvatarImg.style.display = 'block';
+                    }
+                    if (defaultAvatarIcon) {
+                        defaultAvatarIcon.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        // --- 3. THỐNG KÊ (Kiểm tra thẻ tồn tại trước khi điền dữ liệu) ---
+        const statsRes = await fetch('/api/user/stats');
+        const statsData = await statsRes.json();
+        
+        if (statsData.success) {
+            const stats = statsData.data;
             
-            playSoundEffect('success');
+            const sidebarOrders = document.getElementById('sidebar-total-orders');
+            if (sidebarOrders) sidebarOrders.textContent = stats.totalOrders || 0;
+            
+            const cardTotal = document.getElementById('card-total-orders');
+            if (cardTotal) cardTotal.textContent = stats.totalOrders || 0;
+            
+            const cardShipping = document.getElementById('card-shipping-orders');
+            if (cardShipping) cardShipping.textContent = stats.shippingOrders || 0;
+            
+            const cardDelivered = document.getElementById('card-delivered-orders');
+            if (cardDelivered) cardDelivered.textContent = stats.deliveredOrders || 0;
+
+            const badge = document.getElementById('menu-pending-orders');
+            if (badge && stats.pendingOrders > 0) {
+                badge.textContent = stats.pendingOrders;
+                badge.style.display = 'inline-block';
+            }
+        }
+        
+        // --- 4. ĐƠN HÀNG GẦN ĐÂY ---
+        const ordersContainer = document.querySelector('.recent-orders');
+        if (ordersContainer) { // Chỉ gọi API đơn hàng nếu ở trang User
+            const ordersRes = await fetch('/api/user/recent-orders?limit=5');
+            const ordersData = await ordersRes.json();
+            
+            if (ordersData.success && ordersData.data.length > 0) {
+                updateRecentOrders(ordersData.data);
+            } else {
+                ordersContainer.innerHTML = '<h3 class="section-title"><i class="fas fa-history"></i> Đơn hàng gần đây</h3><p style="text-align: center; opacity: 0.6;">Bạn chưa có đơn hàng nào.</p>';
+            }
+        }
+        
+    } catch (error) {
+        console.error("Lỗi khi tải dữ liệu:", error);
+    }
+}
+
+// Cập nhật danh sách đơn hàng gần đây
+function updateRecentOrders(orders) {
+    const recentOrdersContainer = document.querySelector('.recent-orders');
+    if (!recentOrdersContainer) return;
+    
+    let html = '<h3 class="section-title"><i class="fas fa-history"></i> Đơn hàng gần đây</h3>';
+    
+    orders.forEach(order => {
+        html += `
+            <div class="order-item" onclick="viewOrder('${order.id}')">
+                <div class="order-img"><i class="fas fa-box"></i></div>
+                <div class="order-info">
+                    <div class="order-name">Đơn hàng #${order.id}</div>
+                    <div class="order-meta">
+                        <span>Ngày: ${order.date}</span>
+                    </div>
+                </div>
+                <div class="order-status status-${order.statusClass}">${order.statusText}</div>
+                <div class="order-price">${order.total.toLocaleString('vi-VN')}₫</div>
+            </div>
+        `;
+    });
+    
+    recentOrdersContainer.innerHTML = html;
+}
+
+// Cập nhật thông tin cá nhân
+async function updateProfile(event) {
+    event.preventDefault();
+    
+    const formData = {
+        tenNguoiDung: document.querySelector('#profile-fullname')?.value,
+        ngaySinh: document.querySelector('#profile-birthday')?.value,
+        gioiTinh: document.querySelector('#profile-gender')?.value,
+        soDienThoai: document.querySelector('#profile-phone')?.value,
+        diaChi: document.querySelector('#profile-address')?.value
+    };
+    
+    try {
+        const response = await fetch('/api/user/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
             showNotification('Cập nhật thông tin thành công!', 'success');
+            // Cập nhật tên hiển thị trên sidebar
+            document.querySelector('.user-name').textContent = formData.tenNguoiDung;
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
         }
+    } catch (error) {
+        showNotification('Lỗi kết nối đến server', 'error');
+    }
+}
 
-        // Change password function
-        function changePassword() {
-            playSoundEffect('click');
-            showNotification('Tính năng đang phát triển', 'info');
-        }
-
-        // View order function
-        function viewOrder(orderId) {
-            playSoundEffect('click');
-            showNotification(`Đang xem chi tiết đơn hàng #${orderId}`, 'info');
-        }
-
-        // Add address function
-        function addAddress() {
-            playSoundEffect('click');
-            showNotification('Tính năng thêm địa chỉ đang phát triển', 'info');
-        }
-
-        // Edit address function
-        function editAddress() {
-            playSoundEffect('click');
-            showNotification('Tính năng sửa địa chỉ đang phát triển', 'info');
-        }
-
-        // Delete address function
-        function deleteAddress() {
-            playSoundEffect('error');
-            if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-                showNotification('Đã xóa địa chỉ', 'success');
+// Upload avatar
+async function uploadAvatar(input) {
+    if (!input.files || input.files.length === 0) return;
+    
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    try {
+        const response = await fetch('/api/user/upload-avatar', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // 1. Cập nhật avatar ở khu vực thông tin tài khoản (Giữa trang)
+            const avatarImg = document.querySelector('#user-avatar-img');
+            const defaultIcon = document.querySelector('#default-avatar-icon');
+            if (avatarImg) {
+                avatarImg.src = data.data.avatarUrl;
+                avatarImg.style.display = 'block';
             }
-        }
-
-        // Remove from wishlist
-        function removeFromWishlist(productId) {
-            playSoundEffect('click');
-            if (confirm('Bạn có chắc muốn xóa sản phẩm khỏi danh sách yêu thích?')) {
-                showNotification('Đã xóa sản phẩm khỏi danh sách yêu thích', 'success');
+            if (defaultIcon) {
+                defaultIcon.style.display = 'none';
             }
-        }
 
-        // Add to cart from wishlist
-        function addToCart() {
-            playSoundEffect('cart');
-            showNotification('Đã thêm sản phẩm vào giỏ hàng', 'success');
-        }
+            // 2. Cập nhật avatar trên Header (Góc trên cùng bên phải)
+            const headerAvatarImg = document.querySelector('#header-avatar-img');
+            const headerAvatarIcon = document.querySelector('#header-avatar-icon');
+            if (headerAvatarImg) {
+                headerAvatarImg.src = data.data.avatarUrl;
+                headerAvatarImg.style.display = 'inline-block';
+            }
+            if (headerAvatarIcon) {
+                headerAvatarIcon.style.display = 'none';
+            }
 
-        // Save settings
-        function saveSettings() {
-            const language = document.getElementById('language').value;
-            const twoFA = document.getElementById('2fa').checked;
+            showNotification('Cập nhật avatar thành công!', 'success');
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        showNotification('Lỗi kết nối đến server', 'error');
+    }
+}
+
+// Đổi mật khẩu
+async function changePassword() {
+    const currentPassword = prompt('Nhập mật khẩu hiện tại:');
+    if (!currentPassword) return;
+    
+    const newPassword = prompt('Nhập mật khẩu mới (ít nhất 6 ký tự):');
+    if (!newPassword || newPassword.length < 6) {
+        showNotification('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
+        return;
+    }
+    
+    const confirmPassword = prompt('Xác nhận mật khẩu mới:');
+    if (newPassword !== confirmPassword) {
+        showNotification('Mật khẩu xác nhận không khớp', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/user/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Đổi mật khẩu thành công!', 'success');
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        showNotification('Lỗi kết nối đến server', 'error');
+    }
+}
+
+// Hủy đơn hàng
+async function cancelOrder(orderId) {
+    if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+    
+    try {
+        const response = await fetch(`/api/user/orders/${orderId}/cancel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: 'Khách hàng yêu cầu hủy' })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Hủy đơn hàng thành công!', 'success');
+            // Tải lại danh sách đơn hàng
+            loadUserData();
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        showNotification('Lỗi kết nối đến server', 'error');
+    }
+}
+
+// Xem chi tiết đơn hàng
+async function viewOrder(orderId) {
+    try {
+        const response = await fetch(`/api/user/orders/${orderId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const order = data.data;
+            let message = `Đơn hàng #${order.MaDonHang}\n`;
+            message += `Ngày đặt: ${new Date(order.NgayDat).toLocaleDateString('vi-VN')}\n`;
+            message += `Trạng thái: ${order.TrangThai}\n`;
+            message += `Tổng tiền: ${order.TongTien?.toLocaleString('vi-VN')}₫\n`;
+            message += `\nSản phẩm:\n`;
             
-            playSoundEffect('success');
-            showNotification('Đã lưu cài đặt thành công!', 'success');
+            order.items.forEach(item => {
+                message += `- ${item.TenSanPham}: ${item.SoLuong} x ${item.Gia.toLocaleString('vi-VN')}₫\n`;
+            });
+            
+            alert(message);
+        } else {
+            showNotification('Không thể tải chi tiết đơn hàng', 'error');
         }
+    } catch (error) {
+        showNotification('Lỗi kết nối đến server', 'error');
+    }
+}
 
-        // Delete account
-        function deleteAccount() {
-            playSoundEffect('error');
-            if (confirm('Bạn có chắc muốn xóa tài khoản? Hành động này không thể hoàn tác!')) {
-                showNotification('Tài khoản của bạn đã được gửi yêu cầu xóa', 'info');
-            }
-        }
+// Logout function
+async function logout() {
+    playSoundEffect('click');
+    
+    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+        try {
+            // Gọi API đăng xuất để Backend xóa Cookie chứa token
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
 
-        // Logout function
-        function logout() {
-            playSoundEffect('click');
-            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+            if (data.success) {
                 showNotification('Đã đăng xuất thành công!', 'success');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    // Chuyển hướng về route /dangnhap (không có đuôi .ejs)
+                    window.location.href = '/dangnhap';
                 }, 1500);
             }
+        } catch (error) {
+            console.error("Lỗi khi đăng xuất:", error);
+            showNotification('Có lỗi xảy ra, vui lòng thử lại!', 'error'); // Thay bằng hàm báo lỗi của bạn nếu có
         }
+    }
+}
 
-        // Play sound effects
-        function playSoundEffect(type) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                if (type === 'click') {
-                    oscillator.frequency.value = 800;
-                    gainNode.gain.value = 0.1;
-                } else if (type === 'success') {
-                    oscillator.frequency.value = 1200;
-                    gainNode.gain.value = 0.1;
-                } else if (type === 'error') {
-                    oscillator.frequency.value = 400;
-                    gainNode.gain.value = 0.1;
-                } else if (type === 'cart') {
-                    oscillator.frequency.value = 600;
-                    gainNode.gain.value = 0.1;
-                }
-                
-                oscillator.start();
-                setTimeout(() => oscillator.stop(), 150);
-            } catch (e) {
-                // Web Audio API not available, continue silently
-            }
-        }
+// Gán sự kiện khi trang load
+// Gán sự kiện khi trang load
+document.addEventListener('DOMContentLoaded', () => {
+    // Load dữ liệu
+    loadUserData();
+    
+    // --- BỔ SUNG ĐOẠN CODE CHUYỂN TAB NÀY VÀO ĐÂY ---
+    const menuItems = document.querySelectorAll('.menu-item[data-tab]');
+    const tabPanes = document.querySelectorAll('.tab-pane');
 
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; }
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault(); // Ngăn chặn hành vi nhảy trang mặc định của thẻ <a>
+
+            // Lấy ID của tab cần chuyển tới
+            const targetTabId = this.getAttribute('data-tab');
+            const targetPane = document.getElementById(targetTabId);
+
+            // Chỉ xử lý nếu tìm thấy tab nội dung tương ứng
+            if (targetPane) {
+                // 1. Xóa class 'active' khỏi tất cả menu và tab-pane hiện tại
+                menuItems.forEach(menu => menu.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                // 2. Thêm class 'active' cho menu vừa click và tab-pane tương ứng
+                this.classList.add('active');
+                targetPane.classList.add('active');
             }
-        `;
-        document.head.appendChild(style);
+        });
+    });
+    // -----------------------------------------------
+
+    // Gán sự kiện cho form cập nhật profile
+    const profileForm = document.getElementById('update-profile-form');
+    // ... (Các code cũ của bạn giữ nguyên bên dưới)
+    if (profileForm) {
+        profileForm.addEventListener('submit', updateProfile);
+    }
+    
+    // Gán sự kiện cho nút đổi mật khẩu (nếu có)
+    const changePasswordBtn = document.getElementById('change-password-btn');
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', changePassword);
+    }
+});
