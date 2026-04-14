@@ -1,131 +1,495 @@
 <%- include('partials/header') %>
 
-<main class="main-content">
-    <div class="container">
-        <div class="user-container">
-            <div class="user-sidebar">
-                <div class="user-profile">
-                    <div class="avatar-container">
-                        <div class="avatar">
-                            <img src="" alt="Avatar" id="user-avatar-img">
-                            <i class="fas fa-user" id="default-avatar-icon"></i>
+    <main class="main-content">
+        <div class="container">
+            <!-- User Container -->
+            <div class="user-container">
+                <!-- Sidebar -->
+                <div class="user-sidebar">
+                    <div class="user-profile">
+                        <div class="avatar-container">
+                            <div class="avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="avatar-badge" onclick="showNotification('Tính năng đang phát triển', 'info')">
+                                <i class="fas fa-camera"></i>
+                            </div>
                         </div>
-                        <div class="avatar-badge" onclick="document.getElementById('avatar-input').click()">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <input type="file" id="avatar-input" hidden accept="image/*" onchange="uploadAvatar(this)">
+                        <h2 class="user-name">Nguyễn Văn A</h2>
+                        <p class="user-email">nguyenvana@email.com</p>
+                        <span class="member-badge">SMEMBER GOLD</span>
                     </div>
-                    <h2 class="user-name">Đang tải...</h2>
-                    <p class="user-email">Đang tải...</p>
-                    <span class="member-badge">SMEMBER</span>
+
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Đơn hàng</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Yêu thích</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">350</div>
+                            <div class="stat-label">Điểm</div>
+                        </div>
+                    </div>
+
+                    <div class="user-menu">
+                        <div class="menu-item active" data-tab="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tổng quan</span>
+                        </div>
+                        <div class="menu-item" data-tab="profile">
+                            <i class="fas fa-user"></i>
+                            <span>Thông tin tài khoản</span>
+                        </div>
+                        <div class="menu-item" data-tab="orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Đơn hàng của tôi</span>
+                            <span class="badge">3</span>
+                        </div>
+                        <div class="menu-item" data-tab="addresses">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Sổ địa chỉ</span>
+                        </div>
+                        <div class="menu-item" data-tab="wishlist">
+                            <i class="fas fa-heart"></i>
+                            <span>Yêu thích</span>
+                        </div>
+                        <div class="menu-item" data-tab="rewards">
+                            <i class="fas fa-gem"></i>
+                            <span>Điểm thưởng</span>
+                        </div>
+                        <div class="menu-item" data-tab="settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Cài đặt</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="user-stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="sidebar-total-orders">0</div>
-                        <div class="stat-label">Đơn hàng</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="sidebar-points">0</div>
-                        <div class="stat-label">Điểm</div>
-                    </div>
-                </div>
-
-                <div class="user-menu">
-                    <div class="menu-item active" data-tab="dashboard">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Tổng quan</span>
-                    </div>
-                    <div class="menu-item" data-tab="profile">
-                        <i class="fas fa-user"></i>
-                        <span>Thông tin tài khoản</span>
-                    </div>
-                    <div class="menu-item" data-tab="orders">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>Đơn hàng của tôi</span>
-                        <span class="badge" id="menu-pending-orders" style="display: none;">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="user-content">
-                <div class="content-header">
-                    <h1 class="content-title">
-                        <i class="fas fa-tachometer-alt" id="title-icon"></i>
-                        <span id="page-title">Tổng quan</span>
-                    </h1>
-                    <div class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Đăng xuất</span>
-                    </div>
-                </div>
-
-                <div class="content-body">
-                    <div class="tab-pane active" id="dashboard">
-                        <div class="dashboard-grid">
-                            <div class="dashboard-card">
-                                <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
-                                <div class="card-value" id="card-total-orders">0</div>
-                                <div class="card-label">Tổng đơn hàng</div>
-                            </div>
-                            <div class="dashboard-card">
-                                <div class="card-icon"><i class="fas fa-truck"></i></div>
-                                <div class="card-value" id="card-shipping-orders">0</div>
-                                <div class="card-label">Đang giao</div>
-                            </div>
-                            <div class="dashboard-card">
-                                <div class="card-icon"><i class="fas fa-check-circle"></i></div>
-                                <div class="card-value" id="card-delivered-orders">0</div>
-                                <div class="card-label">Đã giao</div>
-                            </div>
-                        </div>
-
-                        <div class="recent-orders">
-                            <p style="text-align: center; opacity: 0.6;">Đang tải danh sách đơn hàng...</p>
+                <!-- Main Content -->
+                <div class="user-content">
+                    <div class="content-header">
+                        <h1 class="content-title">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span id="page-title">Tổng quan</span>
+                        </h1>
+                        <div class="logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
                         </div>
                     </div>
 
-                    <div class="tab-pane" id="profile">
-                        <h3 class="section-title"><i class="fas fa-user-edit"></i> Thông tin cá nhân</h3>
-                        <form class="profile-form" id="update-profile-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Họ và tên</label>
-                                    <input type="text" id="profile-fullname" name="fullname" class="form-input" value="">
+                    <div class="content-body">
+                        <!-- Dashboard Tab -->
+                        <div class="tab-pane active" id="dashboard">
+                            <div class="dashboard-grid">
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <div class="card-value">5</div>
+                                    <div class="card-label">Tổng đơn hàng</div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Ngày sinh</label>
-                                    <input type="date" id="profile-birthday" name="birthday" class="form-input" value="">
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div class="card-value">2</div>
+                                    <div class="card-label">Đang giao</div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="card-value">3</div>
+                                    <div class="card-label">Đã giao</div>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" id="profile-email" class="form-input readonly" value="" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Số điện thoại</label>
-                                    <input type="tel" id="profile-phone" name="phone" class="form-input" value="">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Địa chỉ</label>
-                                <input type="text" id="profile-address" name="address" class="form-input" value="">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                        </form>
-                    </div>
 
-                    <div class="tab-pane" id="orders">
+                            <div class="recent-orders">
+                                <h3 class="section-title">
+                                    <i class="fas fa-history"></i>
+                                    Đơn hàng gần đây
+                                </h3>
+
+                                <div class="order-item">
+                                    <div class="order-img">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="order-info">
+                                        <div class="order-name">Laptop Gaming ASUS ROG Zephyrus G14</div>
+                                        <div class="order-meta">
+                                            <span>Mã: #OD12345</span>
+                                            <span>Ngày: 15/02/2024</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-status status-delivered">Đã giao</div>
+                                    <div class="order-price">32.990.000₫</div>
+                                </div>
+
+                                <div class="order-item">
+                                    <div class="order-img">
+                                        <i class="fas fa-keyboard"></i>
+                                    </div>
+                                    <div class="order-info">
+                                        <div class="order-name">Bàn phím cơ Razer Huntsman V2</div>
+                                        <div class="order-meta">
+                                            <span>Mã: #OD12346</span>
+                                            <span>Ngày: 10/02/2024</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-status status-shipping">Đang giao</div>
+                                    <div class="order-price">3.890.000₫</div>
+                                </div>
+
+                                <div class="order-item">
+                                    <div class="order-img">
+                                        <i class="fas fa-mouse"></i>
+                                    </div>
+                                    <div class="order-info">
+                                        <div class="order-name">Chuột Logitech G Pro X Superlight</div>
+                                        <div class="order-meta">
+                                            <span>Mã: #OD12347</span>
+                                            <span>Ngày: 05/02/2024</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-status status-pending">Chờ xác nhận</div>
+                                    <div class="order-price">2.590.000₫</div>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Profile Tab -->
+                        <div class="tab-pane" id="profile">
+                            <h3 class="section-title">
+                                <i class="fas fa-user-edit"></i>
+                                Thông tin cá nhân
+                            </h3>
+
+                            <form class="profile-form" onsubmit="event.preventDefault(); saveProfile()">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ và tên</label>
+                                        <input type="text" class="form-input" value="Nguyễn Văn A" id="fullname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-input" value="1995-05-15" id="birthday">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-input readonly" value="nguyenvana@email.com"
+                                            readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="tel" class="form-input" value="0987654321" id="phone">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Giới tính</label>
+                                        <select class="form-input" id="gender">
+                                            <option value="male" selected>Nam</option>
+                                            <option value="female">Nữ</option>
+                                            <option value="other">Khác</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Thành viên từ</label>
+                                        <input type="text" class="form-input readonly" value="01/01/2023" readonly>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 20px; margin-top: 30px;">
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                    <button type="button" class="btn btn-secondary" onclick="changePassword()">Đổi mật
+                                        khẩu</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Orders Tab -->
+                        <div class="tab-pane" id="orders">
+                            <h3 class="section-title">
+                                <i class="fas fa-shopping-bag"></i>
+                                Lịch sử đơn hàng
+                            </h3>
+
+                            <div class="orders-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn hàng</th>
+                                            <th>Ngày đặt</th>
+                                            <th>Sản phẩm</th>
+                                            <th>Tổng tiền</th>
+                                            <th>Trạng thái</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="order-id">#OD12345</td>
+                                            <td>15/02/2024</td>
+                                            <td>Laptop Gaming ASUS ROG</td>
+                                            <td>32.990.000₫</td>
+                                            <td><span class="order-status status-delivered">Đã giao</span></td>
+                                            <td><button class="view-btn" onclick="viewOrder('OD12345')">Xem</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="order-id">#OD12346</td>
+                                            <td>10/02/2024</td>
+                                            <td>Bàn phím cơ Razer</td>
+                                            <td>3.890.000₫</td>
+                                            <td><span class="order-status status-shipping">Đang giao</span></td>
+                                            <td><button class="view-btn" onclick="viewOrder('OD12346')">Xem</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="order-id">#OD12347</td>
+                                            <td>05/02/2024</td>
+                                            <td>Chuột Logitech G Pro</td>
+                                            <td>2.590.000₫</td>
+                                            <td><span class="order-status status-pending">Chờ xác nhận</span></td>
+                                            <td><button class="view-btn" onclick="viewOrder('OD12347')">Xem</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="order-id">#OD12348</td>
+                                            <td>01/02/2024</td>
+                                            <td>Tai nghe SteelSeries</td>
+                                            <td>7.490.000₫</td>
+                                            <td><span class="order-status status-delivered">Đã giao</span></td>
+                                            <td><button class="view-btn" onclick="viewOrder('OD12348')">Xem</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Addresses Tab -->
+                        <div class="tab-pane" id="addresses">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                                <h3 class="section-title" style="margin-bottom: 0;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Sổ địa chỉ
+                                </h3>
+                                <button class="btn btn-primary" onclick="addAddress()">
+                                    <i class="fas fa-plus"></i> Thêm địa chỉ mới
+                                </button>
+                            </div>
+
+                            <div class="address-grid">
+                                <div class="address-card">
+                                    <span class="address-badge">Mặc định</span>
+                                    <h4 class="address-name">Nguyễn Văn A</h4>
+                                    <p class="address-detail">
+                                        Số 504 Đại lộ Bình Dương, P. Phú Lợi<br>
+                                        Thành phố Hồ Chí Minh<br>
+                                        SĐT: 0987654321
+                                    </p>
+                                    <div class="address-actions">
+                                        <span onclick="editAddress()"><i class="fas fa-edit"></i> Sửa</span>
+                                        <span onclick="deleteAddress()"><i class="fas fa-trash"></i> Xóa</span>
+                                    </div>
+                                </div>
+
+                                <div class="address-card">
+                                    <h4 class="address-name">Nguyễn Văn A (Công ty)</h4>
+                                    <p class="address-detail">
+                                        Tòa nhà Bitexco, Q.1<br>
+                                        Thành phố Hồ Chí Minh<br>
+                                        SĐT: 0987654321
+                                    </p>
+                                    <div class="address-actions">
+                                        <span onclick="editAddress()"><i class="fas fa-edit"></i> Sửa</span>
+                                        <span onclick="deleteAddress()"><i class="fas fa-trash"></i> Xóa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Tab -->
+                        <div class="tab-pane" id="wishlist">
+                            <h3 class="section-title">
+                                <i class="fas fa-heart"></i>
+                                Sản phẩm yêu thích
+                            </h3>
+
+                            <div class="wishlist-grid">
+                                <div class="wishlist-item">
+                                    <div class="wishlist-img">
+                                        <i class="fas fa-laptop"></i>
+                                        <div class="remove-btn" onclick="removeFromWishlist(1)">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                    </div>
+                                    <div class="wishlist-info">
+                                        <div class="wishlist-name">Laptop Gaming ASUS ROG Zephyrus G14</div>
+                                        <div class="wishlist-price">32.990.000₫</div>
+                                        <button class="add-to-cart-btn" onclick="addToCart()">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="wishlist-item">
+                                    <div class="wishlist-img">
+                                        <i class="fas fa-keyboard"></i>
+                                        <div class="remove-btn" onclick="removeFromWishlist(2)">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                    </div>
+                                    <div class="wishlist-info">
+                                        <div class="wishlist-name">Bàn phím cơ Razer Huntsman V2</div>
+                                        <div class="wishlist-price">3.890.000₫</div>
+                                        <button class="add-to-cart-btn" onclick="addToCart()">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="wishlist-item">
+                                    <div class="wishlist-img">
+                                        <i class="fas fa-mouse"></i>
+                                        <div class="remove-btn" onclick="removeFromWishlist(3)">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                    </div>
+                                    <div class="wishlist-info">
+                                        <div class="wishlist-name">Chuột Logitech G Pro X Superlight</div>
+                                        <div class="wishlist-price">2.590.000₫</div>
+                                        <button class="add-to-cart-btn" onclick="addToCart()">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rewards Tab -->
+                        <div class="tab-pane" id="rewards">
+                            <h3 class="section-title">
+                                <i class="fas fa-gem"></i>
+                                Điểm thưởng SMEMBER
+                            </h3>
+
+                            <div class="dashboard-grid">
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="card-value">350</div>
+                                    <div class="card-label">Điểm hiện tại</div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <div class="card-value">150</div>
+                                    <div class="card-label">Điểm sắp hết hạn</div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-gift"></i>
+                                    </div>
+                                    <div class="card-value">3</div>
+                                    <div class="card-label">Ưu đãi khả dụng</div>
+                                </div>
+                            </div>
+
+                            <div class="recent-orders" style="margin-top: 30px;">
+                                <h3 class="section-title">Lịch sử tích điểm</h3>
+                                <div class="order-item">
+                                    <div class="order-img">
+                                        <i class="fas fa-plus-circle" style="color: var(--neon-green);"></i>
+                                    </div>
+                                    <div class="order-info">
+                                        <div class="order-name">Mua Laptop Gaming ASUS ROG</div>
+                                        <div class="order-meta">Mã đơn: #OD12345 - 15/02/2024</div>
+                                    </div>
+                                    <div class="order-price" style="color: var(--neon-green);">+320 điểm</div>
+                                </div>
+                                <div class="order-item">
+                                    <div class="order-img">
+                                        <i class="fas fa-minus-circle" style="color: var(--neon-pink);"></i>
+                                    </div>
+                                    <div class="order-info">
+                                        <div class="order-name">Đổi voucher giảm giá 100k</div>
+                                        <div class="order-meta">Ngày: 10/02/2024</div>
+                                    </div>
+                                    <div class="order-price" style="color: var(--neon-pink);">-100 điểm</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div class="tab-pane" id="settings">
+                            <h3 class="section-title">
+                                <i class="fas fa-cog"></i>
+                                Cài đặt tài khoản
+                            </h3>
+
+                            <form class="profile-form" style="max-width: 600px;">
+                                <div class="form-group">
+                                    <label class="form-label">Ngôn ngữ hiển thị</label>
+                                    <select class="form-input" id="language">
+                                        <option value="vi" selected>Tiếng Việt</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Thông báo qua Email</label>
+                                    <div style="display: flex; gap: 20px;">
+                                        <label style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox" class="checkbox" checked> Khuyến mãi
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox" class="checkbox" checked> Trạng thái đơn hàng
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox" class="checkbox"> Tin tức gaming
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Bảo mật 2 lớp</label>
+                                    <div style="display: flex; align-items: center; gap: 20px;">
+                                        <label class="remember-me">
+                                            <input type="checkbox" class="checkbox" id="2fa">
+                                            <span>Kích hoạt xác thực 2 lớp</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 20px; margin-top: 30px;">
+                                    <button type="button" class="btn btn-primary" onclick="saveSettings()">Lưu cài
+                                        đặt</button>
+                                    <button type="button" class="btn btn-secondary" onclick="deleteAccount()"
+                                        style="border-color: var(--neon-pink); color: var(--neon-pink);">Xóa tài
+                                        khoản</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<link rel="stylesheet" href="/CSS/User.css">
-<script src="/JS/User.js"></script>
+    <link rel="stylesheet" href="/CSS/User.css">
+    <script src="/JS/User.js"></script>
 
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>
