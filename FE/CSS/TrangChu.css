@@ -27,14 +27,19 @@ body {
     font-family: 'Exo 2', sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
-    background-image: 
+    background-image:
         radial-gradient(circle at 10% 20%, rgba(180, 70, 255, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 50% 50%, rgba(255, 42, 109, 0.05) 0%, transparent 30%);
     min-height: 100vh;
 }
 
-h1, h2, h3, h4, .logo-text, .neon-text {
+h1,
+h2,
+h3,
+h4,
+.logo-text,
+.neon-text {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
 }
@@ -79,8 +84,13 @@ header {
 }
 
 @keyframes pulse {
-    0% { text-shadow: 0 0 5px var(--neon-blue); }
-    100% { text-shadow: 0 0 15px var(--neon-blue), 0 0 25px var(--neon-blue); }
+    0% {
+        text-shadow: 0 0 5px var(--neon-blue);
+    }
+
+    100% {
+        text-shadow: 0 0 15px var(--neon-blue), 0 0 25px var(--neon-blue);
+    }
 }
 
 .logo-text {
@@ -112,6 +122,10 @@ header {
     gap: 25px;
 }
 
+.mobile-nav {
+    display: none;
+}
+
 .nav-item {
     position: relative;
     font-weight: 600;
@@ -124,7 +138,8 @@ header {
     text-decoration: none;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
     color: var(--neon-blue);
     text-shadow: var(--accent-glow);
 }
@@ -140,7 +155,8 @@ header {
     transition: width var(--transition-fast);
 }
 
-.nav-item:hover::after, .nav-item.active::after {
+.nav-item:hover::after,
+.nav-item.active::after {
     width: 100%;
 }
 
@@ -250,6 +266,11 @@ header {
     background: rgba(5, 5, 16, 0.7);
 }
 
+#mobile-search-btn {
+    display: none;
+    text-align: center;
+}
+
 .search-box {
     display: flex;
     max-width: 700px;
@@ -258,7 +279,7 @@ header {
     overflow: hidden;
     border: 2px solid transparent;
     background: linear-gradient(90deg, var(--card-bg), var(--dark-bg)) padding-box,
-                linear-gradient(90deg, var(--neon-blue), var(--neon-purple)) border-box;
+        linear-gradient(90deg, var(--neon-blue), var(--neon-purple)) border-box;
     box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2);
 }
 
@@ -307,7 +328,7 @@ header {
     position: relative;
     border: 2px solid transparent;
     background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
-                linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink)) border-box;
+        linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink)) border-box;
 }
 
 .slider-container {
@@ -425,8 +446,15 @@ header {
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
 }
 
 .slider-controls {
@@ -667,10 +695,12 @@ header {
 .product-name {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    /* Số dòng tối đa bạn muốn hiện */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     min-height: 2.8em;
+    /* Giữ các card cao bằng nhau dù tên 1 hay 2 dòng */
     margin: 10px 0;
     font-size: 1rem;
 }
@@ -703,7 +733,8 @@ header {
     margin-top: 15px;
 }
 
-.cart-btn, .view-btn {
+.cart-btn,
+.view-btn {
     padding: 12px 20px;
     border-radius: 8px;
     font-size: 14px;
@@ -776,6 +807,7 @@ footer::before {
     color: var(--neon-blue);
     position: relative;
     padding-bottom: 15px;
+    display: ruby-text;
 }
 
 .footer-column h3::after {
@@ -790,7 +822,7 @@ footer::before {
 
 .contact-list li {
     margin-bottom: 18px;
-    display: flex;
+    display: block;
     align-items: flex-start;
 }
 
@@ -811,16 +843,14 @@ footer::before {
     margin-bottom: 5px;
 }
 
-.footer-links {
-    list-style: none;
-}
-
 .footer-links li {
     list-style: none;
     margin-bottom: 12px;
+    text-decoration: none;
 }
 
 .footer-links a {
+    list-style: none;
     color: var(--text-secondary);
     transition: var(--transition-fast);
     display: inline-block;
@@ -844,7 +874,7 @@ footer::before {
     overflow: hidden;
     border: 2px solid transparent;
     background: linear-gradient(90deg, var(--card-bg), var(--dark-bg)) padding-box,
-                linear-gradient(90deg, var(--neon-blue), var(--neon-purple)) border-box;
+        linear-gradient(90deg, var(--neon-blue), var(--neon-purple)) border-box;
 }
 
 .newsletter-input {
@@ -924,113 +954,245 @@ footer::before {
     color: var(--neon-green);
 }
 
+
 /* Responsive Styles */
 @media (max-width: 1200px) {
     .products-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-    
+
     .footer-content {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .slide-content h2 {
         font-size: 2.8rem;
     }
 }
 
+
 @media (max-width: 992px) {
     .products-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .slide {
         flex-direction: column;
         justify-content: center;
         text-align: center;
         padding: 40px;
     }
-    
+
     .slide-image {
         display: none;
     }
-    
+
     .nav-menu {
         gap: 15px;
     }
 }
 
 @media (max-width: 768px) {
+
+    /* --- HEADER: Logo, Search, Cart, User trên cùng 1 hàng --- */
     .header-top {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction: row;
+        /* Ép về một hàng */
+        justify-content: space-between;
+        padding: 10px 0;
+        gap: 10px;
     }
-    
-    .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .slider-container {
-        height: 400px;
-    }
-    
-    .slide-content h2 {
-        font-size: 2.2rem;
-    }
-    
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .footer-content {
-        grid-template-columns: 1fr;
-    }
-    
-    .filter-buttons {
-        justify-content: center;
-    }
-}
 
-@media (max-width: 576px) {
-    .header-icons {
-        gap: 15px;
+    /* 2. Thu nhỏ Logo để đủ chỗ */
+    .logo-text {
+        font-size: 18px;
     }
-    
-    .slider-container {
-        height: 350px;
+
+    .logo-text::after {
+        display: none;
+        /* Ẩn chữ GAMING nhỏ để tránh rối */
     }
-    
-    .slide-content h2 {
-        font-size: 1.8rem;
+
+    .logo-icon {
+        font-size: 24px;
     }
-    
-    .slide-content p {
-        font-size: 1rem;
+
+    #mobile-search-btn {
+        display: block;
     }
-    
-    .products-grid {
-        grid-template-columns: 1fr;
-        max-width: 350px;
-        margin: 0 auto;
+
+    .search-container {
+        display: none;
     }
-    
+
+    .search-container.active {
+        display: block;
+    }
+
     .search-box {
-        flex-direction: column;
-        border-radius: 15px;
-        overflow: hidden;
+        margin: 0;
+        height: 35px;
     }
-    
-    .search-input, .search-btn {
+
+    .search-input {
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+
+    .search-btn {
+        padding: 0 10px;
+    }
+
+    .header-icons {
+        gap: 5px;
+    }
+
+    #user-btn {
+        display: none;
+    }
+
+    /* --- MOBILE NAV: Nằm dưới cùng điện thoại --- */
+    header nav {
+        display: none;
+    }
+
+    .mobile-nav {
+        display: grid;
+        position: fixed;
+        bottom: 0;
+        left: 0;
         width: 100%;
-        border-radius: 0;
+        background: var(--card-bg);
+        border-top: 2px solid var(--neon-blue);
+        z-index: 9999;
+        /* Luôn nằm trên cùng */
+        padding: 8px 0;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .nav-menu {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-item {
+        font-size: 10px;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        /* Icon trên, chữ dưới */
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .nav-item i {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    .nav-item::after {
+        display: none;
+        /* Bỏ gạch chân của bản desktop */
+    }
+
+    /* Dropdown không phù hợp cho mobile nav dưới cùng */
+    .dropdown-menu {
+        display: none !important;
+    }
+
+    /* Đẩy nội dung chính lên để không bị Bottom Nav che mất chân trang */
+    body {
+        padding-bottom: 70px;
+    }
+
+    .filter-section {
+        display: none;
+    }
+
+    section-title {
+        font-size: 1.6rem;
+        /* Giảm từ 2.2rem xuống */
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .section-title::after {
+        width: 60px;
+        /* Thu ngắn thanh gạch chân cho khớp với chữ nhỏ */
+    }
+
+    .products-grid {
+        /* Chuyển từ 5 cột (hoặc 3 cột ở tablet) về 2 cột */
+        grid-template-columns: repeat(2, 1fr);
+        /* Thu nhỏ khoảng cách giữa các card một chút để tiết kiệm diện tích */
+        gap: 12px;
+    }
+
+    .product-card {
+        /* Đảm bảo card không quá cao trên màn hình nhỏ */
+        height: auto;
+    }
+
+    .product-info {
+        /* Giảm padding để phần chữ trông cân đối hơn */
+        padding: 12px;
+    }
+
+    .product-name {
+        /* Thu nhỏ font chữ tiêu đề sản phẩm */
+        font-size: 0.9rem;
+        min-height: 2.6em;
+    }
+
+    .product-price {
+        /* Thu nhỏ giá tiền */
+        font-size: 1.1rem;
+    }
+
+    .product-price .old-price {
+        font-size: 0.8rem;
+        margin-left: 5px;
+    }
+
+    /* Thu nhỏ các nút bấm để không bị tràn hàng */
+    .cart-btn,
+    .view-btn {
+        padding: 8px 5px;
+        font-size: 11px;
+    }
+
+    .product-name {
+        -webkit-line-clamp: 1;
+        /* Thu về 1 hàng */
+        min-height: 1.4em;
+        /* Giảm chiều cao tối thiểu tương ứng với 1 hàng */
+        margin: 5px 0;
+        /* Có thể thu nhỏ margin để tiết kiệm không gian */
+        font-size: 0.9rem;
+        /* Thu nhỏ font chữ một chút cho cân đối */
+    }
+
+    .footer-content,
+    .social-linksH {
+        display: block;
+        text-align: center;
+    }
+
+    .footer-content .footer-column:nth-child(3),
+    .footer-content .footer-column:nth-child(4) {
+        display: none !important;
     }
 }
 
-/* Special Effects */
-.particle {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1;
+@media (max-width: 600px) {
+    .footer-content {
+        text-align: center;
+        display: contents;
+    }
+
+    .footer-column li {
+        text-align: center;
+    }
 }
