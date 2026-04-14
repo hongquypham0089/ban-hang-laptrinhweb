@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const cookieParser = require("cookie-parser"); // THÊM DÒNG NÀY
-const jwt = require("jsonwebtoken");           // THÊM DÒNG NÀY
+const cookieParser = require("cookie-parser"); 
+const jwt = require("jsonwebtoken");           
 
 const app = express();
 
@@ -47,11 +47,30 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
     res.render("TrangChu"); 
 });
-
+// Trang giỏ hàng
+app.get("/giohang", (req, res) => {
+    res.render("GioHang"); 
+});
 // Trang Admin
 app.get("/admin", (req, res) => {
     res.render("admin"); 
 });
+
+// // Trang chitiet (Cập nhật lại)
+
+// app.get("/chitiet", (req, res) => {
+//     // Tạo một dữ liệu sản phẩm giả
+//     const dummyProduct = {
+//         name: "Điện thoại iPhone 15 Pro Max",
+//         image: "https://via.placeholder.com/800x500",
+//         price: 29990000 // Thêm các thuộc tính khác nếu file EJS của bạn có gọi đến
+//     };
+    
+//     // Truyền biến product sang cho file ChiTiet.ejs
+//     res.render("ChiTiet", { product: dummyProduct }); 
+// });
+
+
 
 // Trang dangnhap
 app.get("/dangnhap", (req, res) => {
@@ -94,18 +113,16 @@ app.get("/user", (req, res) => {
     res.render("user", userData);
 });
 
-// Các trang khác
-app.get("/cart", (req, res) => {
-    res.render("Cart");
-});
-
 // --- ROUTES API (DATA) ---
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const detailRoutes = require("./routes/detailRoutes"); 
+
 app.use("/api", productRoutes);
 app.use("/api/auth", authRoutes); 
 app.use("/api/user", userRoutes);
+app.use("/chitiet", detailRoutes); 
 // Xử lý lỗi 404
 app.use((req, res) => {
     res.status(404).send("Không tìm thấy trang");

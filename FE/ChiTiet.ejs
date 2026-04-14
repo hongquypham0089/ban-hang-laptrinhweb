@@ -41,37 +41,35 @@
                             <p class="product-code">Mã sản phẩm: <span>#<%= product.id || 'N9-PRO' %></span></p>
                         </div>
                         
+                        <!-- đánh giá sản phẩm
                         <div class="rating-section">
                             <div class="stars">★★★★★</div>
                             <div class="rating-count">
                                 <span>4.8/5</span> (128 đánh giá)
                             </div>
-                        </div>
+                        </div> -->
                         
-                        <div class="variant-selection">
+                        <!-- <div class="variant-selection">
                             <h4 class="variant-title">Chọn phiên bản:</h4>
                             <div class="variant-options">
                                 <button class="variant-btn active">Tiêu chuẩn</button>
                                 <button class="variant-btn">Nâng cấp RAM</button>
                             </div>
-                        </div>
+                        </div> -->
                         
                         <div class="price-section">
                             <div class="current-price"><%= product.price.toLocaleString('vi-VN') %> ₫</div>
+                            <!-- giảm giá sản phẩm
                             <% if (product.oldPrice) { %>
                                 <div>
                                     <span class="old-price"><%= product.oldPrice.toLocaleString('vi-VN') %> ₫</span>
                                     <span class="discount-badge">-11%</span>
                                 </div>
-                            <% } %>
-                            <div class="reward-points">
-                                <i class="fas fa-gem"></i>
-                                <span>Tích lũy điểm SMEMBER hấp dẫn</span>
-                            </div>
+                            <% } %> -->
                         </div>
                         
                         <div class="action-buttons">
-                            <button class="buy-now-btn">
+                            <button class="buy-now-btn" onclick="buyNow('<%= product.id %>')">
                                 <i class="fas fa-bolt"></i> MUA NGAY
                             </button>
                             <button class="add-to-cart-btn" onclick="addToCart('<%= product.id %>')">
