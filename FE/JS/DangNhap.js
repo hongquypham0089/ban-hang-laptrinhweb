@@ -22,6 +22,7 @@ const passwordStrengthText = document.getElementById('password-strength-text');
 document.addEventListener('DOMContentLoaded', function () {
     setupEventListeners();
     setupPasswordValidation();
+    loadSavedLoginData();
 });
 
 // Setup event listeners
@@ -227,33 +228,74 @@ function validateLoginForm() {
         isValid = false;
     }
 
+    const rememberMe = document.getElementById('remember-me').checked;
+
     // If valid, submit form
     if (isValid) {
-        // Play success sound
-        playSoundEffect('success');
-
-        // Show loading state
-        loginSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
-        loginSubmitBtn.disabled = true;
-
-        // Simulate API call
-        setTimeout(() => {
-            showNotification('Đăng nhập thành công! Đang chuyển hướng...', 'success');
-
-            // Reset button
-            setTimeout(() => {
-                loginSubmitBtn.innerHTML = 'Đăng nhập';
-                loginSubmitBtn.disabled = false;
-            }, 1500);
-
-            // In a real app, you would redirect here
-            // window.location.href = '/dashboard';
-        }, 1500);
+        submitLogin({ identifier, password, rememberMe });
     } else {
         playSoundEffect('error');
     }
 
     return isValid;
+}
+
+async function submitLogin({ identifier, password, rememberMe }) {
+    loginSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
+    loginSubmitBtn.disabled = true;
+
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ TenTaiKhoan: identifier, MatKhau: password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const errorMessage = data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại.';
+            document.getElementById('login-identifier-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + errorMessage;
+            document.getElementById('login-identifier').classList.add('error');
+            playSoundEffect('error');
+        } else {
+            if (rememberMe) {
+                localStorage.setItem('savedLoginIdentifier', identifier);
+            } else {
+                localStorage.removeItem('savedLoginIdentifier');
+            }
+
+            showNotification('Đăng nhập thành công! Đang chuyển hướng...', 'success');
+            playSoundEffect('success');
+
+            setTimeout(() => {
+                loginSubmitBtn.innerHTML = 'Đăng nhập';
+                loginSubmitBtn.disabled = false;
+                window.location.href = '/';
+            }, 1000);
+        }
+    } catch (error) {
+        showNotification('Lỗi kết nối tới máy chủ. Vui lòng thử lại.', 'error');
+        playSoundEffect('error');
+        console.error('Login error:', error);
+    } finally {
+        loginSubmitBtn.innerHTML = 'Đăng nhập';
+        loginSubmitBtn.disabled = false;
+    }
+}
+
+function loadSavedLoginData() {
+    const savedIdentifier = localStorage.getItem('savedLoginIdentifier');
+    if (savedIdentifier) {
+        const loginIdentifierInput = document.getElementById('login-identifier');
+        const rememberCheckbox = document.getElementById('remember-me');
+
+        loginIdentifierInput.value = savedIdentifier;
+        rememberCheckbox.checked = true;
+    }
 }
 
 // Validate register form
@@ -344,7 +386,6 @@ function validateRegisterForm() {
         playSoundEffect('success');
 
         // Show loading state
-        registerSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng ký...';
         registerSubmitBtn.disabled = true;
 
         // Simulate API call
@@ -384,6 +425,18 @@ function isValidPhone(phone) {
     // Accept Vietnamese phone numbers: 0xxxxxxxxx or +84xxxxxxxxx
     const phoneRegex = /^(0|\+84)(\d{9,10})$/;
     return phoneRegex.test(phone);
+}
+
+function switchToLogin() {
+    // Hiện Login
+    loginForm.style.opacity = '1';
+    loginForm.style.visibility = 'visible';
+    loginForm.style.zIndex = '2';
+
+    // Ẩn Register
+    registerForm.style.opacity = '0';
+    registerForm.style.visibility = 'hidden';
+    registerForm.style.zIndex = '1';
 }
 
 // Play sound effects

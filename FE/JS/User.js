@@ -3,109 +3,38 @@
 // Lấy thông tin người dùng khi load trang
 async function loadUserData() {
     try {
-        // Lấy thông tin profile
-        const profileRes = await fetch('/api/user/profile');
+        const profileRes = await fetch('/api/user/profile', {
+            credentials: 'include'
+        });
+        
+        // --- THÊM ĐOẠN NÀY ---
+        // Nếu server trả về 401 (Unauthorized - Chưa đăng nhập)
+        if (profileRes.status === 401) {
+            console.log("Khách chưa đăng nhập. Duyệt web ẩn danh.");
+            
+            // Tùy chọn: Nếu người dùng đang cố tình vào trang cá nhân (/user) thì mới đá ra trang login
+            if (window.location.pathname === '/user') {
+                 window.location.href = '/login'; 
+            }
+            return; // Dừng hàm tại đây, không báo lỗi, không làm chết Javascript
+        }
+        // ----------------------
+
+        // Nếu có data trả về bình thường (Đã đăng nhập)
         const profileData = await profileRes.json();
         
         if (profileData.success) {
             const user = profileData.data;
             
-            // --- 1. CẬP NHẬT HEADER (Chạy trên mọi trang vì trang nào cũng có Header) ---
-            if (user.avatar) {
-                const headerAvatarImg = document.getElementById('header-avatar-img');
-                const headerAvatarIcon = document.getElementById('header-avatar-icon');
-                if (headerAvatarImg) {
-                    headerAvatarImg.src = user.avatar;
-                    headerAvatarImg.style.display = 'inline-block';
-                }
-                if (headerAvatarIcon) {
-                    headerAvatarIcon.style.display = 'none';
-                }
-            }
-
-            // --- 2. CẬP NHẬT TRANG USER (Chỉ chạy khi đang ở trang User) ---
-            const userNameEl = document.querySelector('.user-name');
-            if (userNameEl) { 
-                // Nếu tìm thấy class này -> Chắc chắn đang ở trang User
-                userNameEl.textContent = user.tenNguoiDung || user.tenTaiKhoan;
-                
-                const userEmailEl = document.querySelector('.user-email');
-                if (userEmailEl) userEmailEl.textContent = user.email;
-                
-                // Xử lý Form Profile
-                const elFullname = document.querySelector('#profile-fullname');
-                const elBirthday = document.querySelector('#profile-birthday');
-                const elPhone = document.querySelector('#profile-phone');
-                const elAddress = document.querySelector('#profile-address');
-                const elEmail = document.querySelector('#profile-email');
-
-                if(elFullname) elFullname.value = user.tenNguoiDung || '';
-                if(elPhone) elPhone.value = user.soDienThoai || '';
-                if(elAddress) elAddress.value = user.diaChi || '';
-                if(elEmail) elEmail.value = user.email || '';
-                
-                // Định dạng lại ngày sinh
-                if (elBirthday && user.ngaySinh) {
-                    const date = new Date(user.ngaySinh);
-                    elBirthday.value = date.toISOString().split('T')[0];
-                }
-
-                // Xử lý Avatar ở giữa trang
-                if (user.avatar) {
-                    const userAvatarImg = document.getElementById('user-avatar-img');
-                    const defaultAvatarIcon = document.getElementById('default-avatar-icon');
-                    if (userAvatarImg) {
-                        userAvatarImg.src = user.avatar;
-                        userAvatarImg.style.display = 'block';
-                    }
-                    if (defaultAvatarIcon) {
-                        defaultAvatarIcon.style.display = 'none';
-                    }
-                }
+            // Cập nhật Header (Avatar, Tên...)
+            const headerAvatarImg = document.getElementById('header-avatar-img');
+            if (headerAvatarImg && user.avatar) {
+                headerAvatarImg.src = user.avatar;
+                //... code xử lý giao diện tiếp theo của bạn
             }
         }
-        
-        // --- 3. THỐNG KÊ (Kiểm tra thẻ tồn tại trước khi điền dữ liệu) ---
-        const statsRes = await fetch('/api/user/stats');
-        const statsData = await statsRes.json();
-        
-        if (statsData.success) {
-            const stats = statsData.data;
-            
-            const sidebarOrders = document.getElementById('sidebar-total-orders');
-            if (sidebarOrders) sidebarOrders.textContent = stats.totalOrders || 0;
-            
-            const cardTotal = document.getElementById('card-total-orders');
-            if (cardTotal) cardTotal.textContent = stats.totalOrders || 0;
-            
-            const cardShipping = document.getElementById('card-shipping-orders');
-            if (cardShipping) cardShipping.textContent = stats.shippingOrders || 0;
-            
-            const cardDelivered = document.getElementById('card-delivered-orders');
-            if (cardDelivered) cardDelivered.textContent = stats.deliveredOrders || 0;
-
-            const badge = document.getElementById('menu-pending-orders');
-            if (badge && stats.pendingOrders > 0) {
-                badge.textContent = stats.pendingOrders;
-                badge.style.display = 'inline-block';
-            }
-        }
-        
-        // --- 4. ĐƠN HÀNG GẦN ĐÂY ---
-        const ordersContainer = document.querySelector('.recent-orders');
-        if (ordersContainer) { // Chỉ gọi API đơn hàng nếu ở trang User
-            const ordersRes = await fetch('/api/user/recent-orders?limit=5');
-            const ordersData = await ordersRes.json();
-            
-            if (ordersData.success && ordersData.data.length > 0) {
-                updateRecentOrders(ordersData.data);
-            } else {
-                ordersContainer.innerHTML = '<h3 class="section-title"><i class="fas fa-history"></i> Đơn hàng gần đây</h3><p style="text-align: center; opacity: 0.6;">Bạn chưa có đơn hàng nào.</p>';
-            }
-        }
-        
-    } catch (error) {
-        console.error("Lỗi khi tải dữ liệu:", error);
+    } catch (err) {
+        console.log("Lỗi tải thông tin user: ", err);
     }
 }
 
@@ -150,6 +79,7 @@ async function updateProfile(event) {
     try {
         const response = await fetch('/api/user/profile', {
             method: 'PUT',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
@@ -179,6 +109,7 @@ async function uploadAvatar(input) {
     try {
         const response = await fetch('/api/user/upload-avatar', {
             method: 'POST',
+            credentials: 'include',
             body: formData
         });
         
@@ -236,6 +167,7 @@ async function changePassword() {
     try {
         const response = await fetch('/api/user/change-password', {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
         });
@@ -259,6 +191,7 @@ async function cancelOrder(orderId) {
     try {
         const response = await fetch(`/api/user/orders/${orderId}/cancel`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ reason: 'Khách hàng yêu cầu hủy' })
         });
@@ -280,7 +213,9 @@ async function cancelOrder(orderId) {
 // Xem chi tiết đơn hàng
 async function viewOrder(orderId) {
     try {
-        const response = await fetch(`/api/user/orders/${orderId}`);
+        const response = await fetch(`/api/user/orders/${orderId}`, {
+            credentials: 'include'
+        });
         const data = await response.json();
         
         if (data.success) {
@@ -312,7 +247,8 @@ async function logout() {
         try {
             // Gọi API đăng xuất để Backend xóa Cookie chứa token
             const response = await fetch('/api/auth/logout', {
-                method: 'POST'
+                method: 'POST',
+                credentials: 'include'
             });
             
             const data = await response.json();

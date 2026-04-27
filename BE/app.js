@@ -49,7 +49,11 @@ app.get("/", (req, res) => {
 });
 // Trang giỏ hàng
 app.get("/giohang", (req, res) => {
-    res.render("GioHang"); 
+    // Truyền dữ liệu giỏ hàng (tạm thời rỗng, sau này có thể lấy từ session/DB)
+    const cart = {
+        items: [] // Mảng sản phẩm trong giỏ hàng
+    };
+    res.render("GioHang", { cart }); 
 });
 // Trang Admin
 app.get("/admin", (req, res) => {
@@ -118,7 +122,9 @@ const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const detailRoutes = require("./routes/detailRoutes"); 
+const addToCartRoutes = require("./routes/addtocartRoute");
 
+app.use("/api/cart", addToCartRoutes); // Thêm route cho giỏ hàng
 app.use("/api", productRoutes);
 app.use("/api/auth", authRoutes); 
 app.use("/api/user", userRoutes);

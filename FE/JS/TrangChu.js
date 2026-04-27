@@ -12,14 +12,42 @@ const searchContainer = document.querySelector('.search-container');
 
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', function () {
-    renderProducts(products);
+document.addEventListener('DOMContentLoaded', async function () {
+    // 1. Gọi hàm fetch dữ liệu từ API thay vì dùng biến tĩnh
+    await fetchProductsFromAPI(); 
+    
     initSlider();
     setupEventListeners();
     createParticles();
     createNeonEffects();
 });
 
+// Thêm hàm mới: Lấy sản phẩm từ Backend và Render
+async function fetchProductsFromAPI() {
+    try {
+        const response = await fetch('/api/products');
+        const dbProducts = await response.json();
+
+        // 2. Chuyển đổi tên cột từ Tiếng Việt (Database) sang Tiếng Anh (Frontend)
+        const formattedProducts = dbProducts.map(item => {
+            return {
+                id: item.MaSanPham,
+                name: item.TenSanPham,
+                price: Number(item.Gia),
+                oldPrice: Math.round(Number(item.Gia) * 1.1), // Giả lập giá cũ đắt hơn 10%
+                image: item.HinhAnh || 'https://via.placeholder.com/300x200?text=No+Image',
+                rating: 5 // Tạm thời để mặc định 5 sao
+            };
+        });
+
+        // 3. Đưa dữ liệu đã chuẩn hóa vào hàm render
+        renderProducts(formattedProducts);
+        
+    } catch (error) {
+        console.error('Lỗi khi tải danh sách sản phẩm:', error);
+        productsGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">Không thể tải sản phẩm lúc này.</p>';
+    }
+}
 // Render products to the grid
 function renderProducts(productsArray) {
     productsGrid.innerHTML = '';
@@ -293,7 +321,6 @@ function playSoundEffect(type) {
     try {
         if (type === 'click') {
             // Simulate click sound with a beep
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             oscillator.connect(audioContext.destination);
             oscillator.frequency.value = 800;
