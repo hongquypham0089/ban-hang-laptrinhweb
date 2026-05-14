@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { authenticateToken } = require("../middleware/authMiddleware"); // Đổi đường dẫn cho khớp tên file của bạn
 
 // Cấu hình multer để upload avatar
 const storage = multer.diskStorage({
@@ -42,22 +43,7 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-// Middleware xác thực token từ cookie
-const authenticateToken = (req, res, next) => {
-    const token = req.cookies.token;
-    
-    if (!token) {
-        return res.status(401).json({ success: false, message: "Chưa đăng nhập" });
-    }
-    
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret_key");
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(403).json({ success: false, message: "Token không hợp lệ hoặc đã hết hạn" });
-    }
-};
+
 
 // ==================== API LẤY THÔNG TIN ====================
 

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer - N9 | Quản lý đơn hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/admin_donhang.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="logo-text">Computer - N9</div>
+                </div>
+                <span class="admin-badge">ADMIN PANEL</span>
+            </div>
+
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>Admin N9</h4>
+                    <p>admin@computern9.vn</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-category">Main</div>
+                <a href="/admin" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div></a>
+                <a href="/admin_sanpham" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-box"></i><span>Sản phẩm</span></div></a>
+                <a href="/admin_danhmuc" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-list"></i><span>Danh mục</span></div></a>
+                <a href="/admin_donhang" style="text-decoration: none;"><div class="menu-item active"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></div></a>
+                <div class="menu-category">Hệ thống</div>
+                <a href="/admin_user" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-users"></i><span>Người dùng</span></div></a>
+                <a href="/" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-home"></i><span>Về Trang Chủ</span></div></a>
+                <div class="menu-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title">
+                    <i class="fas fa-shopping-bag"></i>
+                    Quản lý đơn hàng
+                </h1>
+                <div class="top-bar-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm đơn hàng...">
+                        <button onclick="searchOrders()"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="notification-btn" onclick="showNotifications()">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-label">
+                        <i class="fas fa-filter"></i>
+                        <span>Lọc theo:</span>
+                    </div>
+                    
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="pending">Chờ xác nhận</option>
+                        <option value="processing">Đang xử lý</option>
+                        <option value="shipping">Đang giao</option>
+                        <option value="completed">Hoàn thành</option>
+                        <option value="cancelled">Đã hủy</option>
+                        <option value="refunded">Hoàn tiền</option>
+                    </select>
+
+                    <select class="filter-select" id="paymentFilter" onchange="applyFilters()">
+                        <option value="all">Tất cả thanh toán</option>
+                        <option value="cod">COD</option>
+                        <option value="bank">Chuyển khoản</option>
+                        <option value="card">Thẻ tín dụng</option>
+                        <option value="momo">Momo</option>
+                    </select>
+
+                    <div class="date-range">
+                        <input type="date" class="date-input" id="fromDate" onchange="applyFilters()" placeholder="Từ ngày">
+                        <span style="color: var(--text-secondary);">→</span>
+                        <input type="date" class="date-input" id="toDate" onchange="applyFilters()" placeholder="Đến ngày">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button class="apply-filter-btn" onclick="applyFilters()">Áp dụng</button>
+                    <span class="reset-filter" onclick="resetFilters()">Đặt lại</span>
+                </div>
+            </div>
+
+            <!-- Orders Stats -->
+            <!-- Orders Stats -->
+            <div class="orders-stats" id="ordersStats">
+                <div class="stat-item active" data-status="all" onclick="filterByStatus('all')">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value" id="statAll">0</div>
+                    <div class="stat-label">Tất cả</div>
+                </div>
+                <div class="stat-item" data-status="pending" onclick="filterByStatus('pending')">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-value" id="statPending">0</div>
+                    <div class="stat-label">Chờ xác nhận</div>
+                </div>
+                <div class="stat-item" data-status="processing" onclick="filterByStatus('processing')">
+                    <div class="stat-icon">⚙️</div>
+                    <div class="stat-value" id="statProcessing">0</div>
+                    <div class="stat-label">Đang xử lý</div>
+                </div>
+                <div class="stat-item" data-status="shipping" onclick="filterByStatus('shipping')">
+                    <div class="stat-icon">🚚</div>
+                    <div class="stat-value" id="statShipping">0</div>
+                    <div class="stat-label">Đang giao</div>
+                </div>
+                <div class="stat-item" data-status="completed" onclick="filterByStatus('completed')">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="statCompleted">0</div>
+                    <div class="stat-label">Hoàn thành</div>
+                </div>
+                <div class="stat-item" data-status="cancelled" onclick="filterByStatus('cancelled')">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-value" id="statCancelled">0</div>
+                    <div class="stat-label">Đã hủy</div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="orders-table-container">
+                <div class="orders-header">
+                    <h3 class="orders-title">
+                        <i class="fas fa-list"></i>
+                        Danh sách đơn hàng
+                    </h3>
+                    <button class="export-btn" onclick="exportOrders()">
+                        <i class="fas fa-file-export"></i>
+                        Xuất Excel
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Khách hàng</th>
+                                <th>Sản phẩm</th>
+                                <th>Tổng tiền</th>
+                                <th>Ngày đặt</th>
+                                <th>Thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr><td colspan="8" style="text-align: center; padding: 60px;">
+                                <div class="loading-spinner"></div>
+                                <p>Đang tải dữ liệu...</p>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <div class="pagination-info" id="paginationInfo">
+                        Hiển thị 0-0 của 0 đơn hàng
+                    </div>
+                    <div class="pagination-buttons" id="paginationButtons">
+                        <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn" disabled><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">
+                    <i class="fas fa-shopping-bag" style="color: var(--neon-blue);"></i>
+                    Chi tiết đơn hàng
+                </h3>
+                <div class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be dynamically loaded -->
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeModal()">Đóng</button>
+                <button class="modal-btn save" onclick="saveOrderChanges()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 243, 255, 0.2);
+            border-top-color: var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .notification.success {
+            background: linear-gradient(90deg, rgba(5, 255, 161, 0.1), rgba(10, 10, 22, 0.9));
+            color: var(--neon-green);
+            border-left: 4px solid var(--neon-green);
+        }
+        
+        .notification.error {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.1), rgba(10, 10, 22, 0.9));
+            color: var(--neon-pink);
+            border-left: 4px solid var(--neon-pink);
+        }
+        
+        .notification.info {
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), rgba(10, 10, 22, 0.9));
+            color: var(--neon-blue);
+            border-left: 4px solid var(--neon-blue);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .status-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: rgb(192, 192, 192);
+            outline: none;
+            width: 100%;
+        }
+        
+        .order-detail-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+        }
+        
+        .detail-title {
+            font-size: 1rem;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .products-table th,
+        .products-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .products-table th {
+            text-align: left;
+            color: var(--neon-blue);
+        }
+        
+        .products-table td {
+            text-align: left;
+            color: var(--text-secondary);
+        }
+        
+        .products-table td:last-child,
+        .products-table th:last-child {
+            text-align: right;
+        }
+        
+        .total-row {
+            margin-top: 15px;
+            text-align: right;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .total-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neon-green);
+        }
+    </style>
+
+    <script src="/JS/admin_donhang.js"></script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 // DOM Elements
 const formSection = document.getElementById('form-section');
 const loginForm = document.getElementById('login-form');
@@ -274,7 +273,13 @@ async function submitLogin({ identifier, password, rememberMe }) {
             setTimeout(() => {
                 loginSubmitBtn.innerHTML = 'Đăng nhập';
                 loginSubmitBtn.disabled = false;
-                window.location.href = '/';
+
+                // Kiểm tra role trả về từ server 
+                if (data.role === 1) {
+                    window.location.href = '/admin'; // Chuyển hướng đến trang quản trị
+                } else {
+                    window.location.href = '/';      // Chuyển hướng về trang chủ
+                }
             }, 1000);
         }
     } catch (error) {
@@ -309,6 +314,10 @@ function validateRegisterForm() {
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-confirm-password').value;
     const termsAgreed = document.getElementById('terms-agreement').checked;
+
+    // Lấy thêm ngày sinh nếu có id là register-birthday (nếu không có thì để rỗng)
+    const birthdayEl = document.getElementById('register-birthday');
+    const birthday = birthdayEl ? birthdayEl.value : null;
 
     // Reset all errors
     document.querySelectorAll('.error-message').forEach(el => {
@@ -382,32 +391,57 @@ function validateRegisterForm() {
 
     // If valid, submit form
     if (isValid) {
-        // Play success sound
         playSoundEffect('success');
-
-        // Show loading state
         registerSubmitBtn.disabled = true;
+        registerSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
 
-        // Simulate API call
-        setTimeout(() => {
-            showNotification('Đăng ký thành công! Chào mừng bạn đến với Computer N9 Gaming', 'success');
+        // Gọi API Đăng ký thật thay vì setTimeout
+        const payload = {
+            TenNguoiDung: name,
+            SoDienThoai: phone,
+            Email: email,
+            MatKhau: password
+        };
+        
+        if (birthday) {
+            payload.NgaySinh = birthday;
+        }
 
-            // Reset button
-            setTimeout(() => {
-                registerSubmitBtn.innerHTML = 'Đăng ký tài khoản';
+        fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Đăng ký thành công! Chào mừng bạn đến với Computer N9', 'success');
+                
+                // Trả lại trạng thái nút và chuyển qua form login
+                setTimeout(() => {
+                    switchToLogin();
+                    registerFormData.reset();
+                    passwordStrengthBar.className = 'strength-fill';
+                    passwordStrengthText.textContent = 'Mật khẩu chưa đủ mạnh';
+                    registerSubmitBtn.innerHTML = 'Đăng ký tài khoản';
+                    registerSubmitBtn.disabled = false;
+                }, 2000);
+            } else {
+                showNotification(data.message || 'Đăng ký thất bại', 'error');
                 registerSubmitBtn.disabled = false;
-            }, 1500);
-
-            // Switch back to login form after successful registration
-            setTimeout(() => {
-                switchToLogin();
-
-                // Clear form
-                registerFormData.reset();
-                passwordStrengthBar.className = 'strength-fill';
-                passwordStrengthText.textContent = 'Mật khẩu chưa đủ mạnh';
-            }, 2000);
-        }, 2000);
+                registerSubmitBtn.innerHTML = 'Đăng ký tài khoản';
+                playSoundEffect('error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Lỗi kết nối máy chủ', 'error');
+            registerSubmitBtn.disabled = false;
+            registerSubmitBtn.innerHTML = 'Đăng ký tài khoản';
+            playSoundEffect('error');
+        });
     } else {
         playSoundEffect('error');
     }

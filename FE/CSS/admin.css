@@ -58,7 +58,59 @@ h1, h2, h3, h4, .logo-text {
     overflow-y: auto;
     z-index: 100;
 }
+/* Category management */
+.categories-header {
+    margin-bottom: 20px;
+}
 
+.categories-header h3 {
+    color: var(--neon-blue);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.product-count-badge {
+    background: rgba(0, 243, 255, 0.2);
+    color: var(--neon-blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.action-buttons-group {
+    display: flex;
+    gap: 10px;
+}
+
+.required {
+    color: #ff0070;
+    margin-left: 3px;
+}
+
+/* Data table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 12px;
+    background: rgba(0, 243, 255, 0.1);
+    color: var(--neon-blue);
+    font-weight: 600;
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Active menu item */
+.menu-item.active {
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.2), transparent);
+    border-left-color: var(--neon-blue);
+}
 .sidebar-header {
     padding: 30px 20px;
     text-align: center;
@@ -237,7 +289,7 @@ h1, h2, h3, h4, .logo-text {
 /* Stats Cards */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-bottom: 30px;
 }

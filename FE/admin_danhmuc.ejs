@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Quản lý Danh mục | Computer N9</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/admin.css">
+    <style>
+        /* Category Management Specific Styles */
+        .categories-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .category-stat-card {
+            background: linear-gradient(135deg, #13132e, #0a0a1a);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .category-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
+        }
+        
+        .category-stat-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .category-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+        }
+        
+        .category-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .categories-table-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .categories-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .categories-table th {
+            text-align: left;
+            padding: 15px;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-blue);
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .categories-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+        
+        .categories-table tr:hover {
+            background: rgba(0, 243, 255, 0.05);
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .product-count {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+        }
+        
+        .product-count.high {
+            background: rgba(5, 255, 161, 0.2);
+            color: var(--neon-green);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: rgba(0, 243, 255, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+        
+        /* Category Form in Modal */
+        .category-icon-preview {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .category-icon-preview i {
+            font-size: 30px;
+            color: white;
+        }
+        
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .icon-option:hover {
+            background: rgba(0, 243, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .icon-option.selected {
+            border-color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+        
+        .icon-option i {
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .categories-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-table {
+                font-size: 0.85rem;
+            }
+            
+            .categories-table th,
+            .categories-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+                    <div class="logo-text">Computer - N9</div>
+                </div>
+                <span class="admin-badge">ADMIN PANEL</span>
+            </div>
+
+            <div class="admin-info">
+                <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+                <div class="admin-details">
+                    <h4>Admin N9</h4>
+                    <p>admin@computern9.vn</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-category">Main</div>
+                <a href="/admin" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div></a>
+                <a href="/admin_sanpham" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-box"></i><span>Sản phẩm</span></div></a>
+                <a href="/admin_danhmuc" style="text-decoration: none;"><div class="menu-item active"><i class="fas fa-list"></i><span>Danh mục</span></div></a>
+                <a href="/admin_donhang" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></div></a>
+                <div class="menu-category">Hệ thống</div>
+                <a href="/admin_user" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-users"></i><span>Người dùng</span></div></a>
+                <a href="/" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-home"></i><span>Về Trang Chủ</span></div></a>
+                <div class="menu-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="top-bar">
+                <h1 class="page-title">
+                    <i class="fas fa-list"></i> Quản lý Danh mục
+                </h1>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm danh mục...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="categories-stats">
+                <div class="category-stat-card">
+                    <div class="category-stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="category-stat-value" id="totalCategories">0</div>
+                    <div class="category-stat-label">Tổng danh mục</div>
+                </div>
+                <div class="category-stat-card">
+                    <div class="category-stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="category-stat-value" id="totalProducts">0</div>
+                    <div class="category-stat-label">Tổng sản phẩm</div>
+                </div>
+                <div class="category-stat-card">
+                    <div class="category-stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="category-stat-value" id="avgProductsPerCategory">0</div>
+                    <div class="category-stat-label">Sản phẩm trung bình/danh mục</div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <select class="filter-select" id="sortFilter">
+                        <option value="name_asc">Sắp xếp: Tên A-Z</option>
+                        <option value="name_desc">Sắp xếp: Tên Z-A</option>
+                        <option value="products_desc">Sắp xếp: Nhiều sản phẩm nhất</option>
+                        <option value="products_asc">Sắp xếp: Ít sản phẩm nhất</option>
+                        <option value="id_desc">Mới nhất</option>
+                        <option value="id_asc">Cũ nhất</option>
+                    </select>
+                </div>
+                <button class="add-btn" onclick="openAddCategoryModal()">
+                    <i class="fas fa-plus"></i> Thêm danh mục mới
+                </button>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="categories-table-container">
+                <table class="categories-table">
+                    <thead>
+                        <tr>
+                            <th>Mã danh mục</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th>Số sản phẩm</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                <div class="loading-spinner"></div>
+                                <p>Đang tải dữ liệu...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fas fa-plus"></i> Thêm danh mục mới</h3>
+                <div class="modal-close" onclick="closeModal('categoryModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId">
+                    
+                    <div class="category-icon-preview" id="iconPreview">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tên danh mục <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="tenLoai" placeholder="Nhập tên danh mục..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mô tả danh mục</label>
+                        <textarea class="form-textarea" id="moTa" rows="3" placeholder="Nhập mô tả cho danh mục..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeModal('categoryModal')">Hủy bỏ</button>
+                <button class="modal-btn save" onclick="saveCategory()">Lưu danh mục</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff0070; margin-bottom: 15px;"></i>
+            <h3>Xác nhận xóa danh mục?</h3>
+            <p id="deleteMessage">Hành động này không thể hoàn tác. Danh mục sẽ bị xóa vĩnh viễn.</p>
+            <div class="warning-box" style="background: rgba(255, 0, 112, 0.1); padding: 10px; border-radius: 8px; margin: 15px 0;">
+                <i class="fas fa-info-circle"></i> Lưu ý: Chỉ có thể xóa danh mục khi không có sản phẩm nào thuộc danh mục này.
+            </div>
+            <div class="modal-footer" style="justify-content: center; gap: 10px; margin-top: 20px;">
+                <button class="modal-btn cancel" onclick="closeModal('deleteModal')">Quay lại</button>
+                <button class="modal-btn delete" onclick="confirmDelete()">Xóa danh mục</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let categories = [];
+        let products = [];
+        let deleteId = null;
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let currentSort = 'name_asc';
+        let selectedIcon = 'fas fa-folder';
+
+        // Icon mapping for preview
+        const iconMap = {
+            'fas fa-folder': 'folder',
+            'fas fa-laptop': 'laptop',
+            'fas fa-desktop': 'desktop',
+            'fas fa-keyboard': 'keyboard',
+            'fas fa-mouse': 'mouse',
+            'fas fa-headphones': 'headphones',
+            'fas fa-tv': 'tv',
+            'fas fa-microphone': 'microphone',
+            'fas fa-gamepad': 'gamepad',
+            'fas fa-chair': 'chair',
+            'fas fa-plug': 'plug',
+            'fas fa-microchip': 'microchip'
+        };
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadData();
+            setupEventListeners();
+        });
+
+        async function loadData() {
+            await Promise.all([fetchCategories(), fetchProducts()]);
+        }
+
+        async function fetchCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                if (!response.ok) throw new Error('Không thể tải danh mục');
+                const result = await response.json();
+                categories = result.success ? result.data : result;
+                renderCategories();
+                updateStats();
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Không thể tải danh mục!', 'error');
+            }
+        }
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                if (!response.ok) throw new Error('Không thể tải sản phẩm');
+                products = await response.json();
+                renderCategories(); // Re-render để cập nhật số lượng sản phẩm
+                updateStats();
+            } catch (error) {
+                console.error('Error:', error);
+                products = [];
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', () => {
+                currentPage = 1;
+                renderCategories();
+            });
+
+            document.getElementById('sortFilter').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                currentPage = 1;
+                renderCategories();
+            });
+
+            // Icon selector
+            document.querySelectorAll('.icon-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedIcon = this.getAttribute('data-icon');
+                    updateIconPreview(selectedIcon);
+                });
+            });
+        }
+
+        function updateIconPreview(iconClass) {
+            const preview = document.getElementById('iconPreview');
+            preview.innerHTML = `<i class="${iconClass}"></i>`;
+        }
+
+        function sortCategories(categoriesToSort) {
+            const sorted = [...categoriesToSort];
+            switch(currentSort) {
+                case 'name_asc':
+                    sorted.sort((a, b) => a.TenLoai.localeCompare(b.TenLoai));
+                    break;
+                case 'name_desc':
+                    sorted.sort((a, b) => b.TenLoai.localeCompare(a.TenLoai));
+                    break;
+                case 'products_desc':
+                    sorted.sort((a, b) => getProductCount(b.MaLoai) - getProductCount(a.MaLoai));
+                    break;
+                case 'products_asc':
+                    sorted.sort((a, b) => getProductCount(a.MaLoai) - getProductCount(b.MaLoai));
+                    break;
+                case 'id_desc':
+                    sorted.sort((a, b) => b.MaLoai - a.MaLoai);
+                    break;
+                case 'id_asc':
+                    sorted.sort((a, b) => a.MaLoai - b.MaLoai);
+                    break;
+                default:
+                    sorted.sort((a, b) => a.TenLoai.localeCompare(b.TenLoai));
+            }
+            return sorted;
+        }
+
+        function getProductCount(categoryId) {
+            return products.filter(p => p.MaLoai == categoryId).length;
+        }
+
+        function renderCategories() {
+            const tbody = document.getElementById('categoriesTableBody');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = categories.filter(c => 
+                c.TenLoai.toLowerCase().includes(searchTerm) ||
+                (c.MoTa && c.MoTa.toLowerCase().includes(searchTerm))
+            );
+            
+            const sorted = sortCategories(filtered);
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginated = sorted.slice(start, start + itemsPerPage);
+            
+            if (paginated.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 60px;">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>Không có danh mục nào</h3>
+                                <p>Hãy thêm danh mục mới để bắt đầu</p>
+                                <button class="add-btn" onclick="openAddCategoryModal()" style="margin-top: 15px;">
+                                    <i class="fas fa-plus"></i> Thêm danh mục đầu tiên
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            paginated.forEach(category => {
+                const productCount = getProductCount(category.MaLoai);
+                const productCountClass = productCount > 10 ? 'high' : '';
+                const createdDate = category.NgayTao ? new Date(category.NgayTao).toLocaleDateString('vi-VN') : '---';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="category-badge">#${category.MaLoai}</span></td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <strong>${escapeHtml(category.TenLoai)}</strong>
+                            </div>
+                        </td>
+                        <td>${category.MoTa ? escapeHtml(category.MoTa.substring(0, 60)) + (category.MoTa.length > 60 ? '...' : '') : '---'}</td>
+                        <td><span class="product-count ${productCountClass}">${productCount} sản phẩm</span></td>
+                        <td>${createdDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit" onclick="openEditCategoryModal(${category.MaLoai})" title="Sửa danh mục">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="openDeleteModal(${category.MaLoai})" title="Xóa danh mục">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            renderPagination(filtered.length);
+        }
+
+        function renderPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = `<div class="pagination-buttons">`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            html += `</div>`;
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderCategories();
+        }
+
+        function updateStats() {
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('totalProducts').textContent = products.length;
+            
+            const avg = categories.length > 0 ? (products.length / categories.length).toFixed(1) : 0;
+            document.getElementById('avgProductsPerCategory').textContent = avg;
+        }
+
+        async function saveCategory() {
+            const id = document.getElementById('categoryId').value;
+            const tenLoai = document.getElementById('tenLoai').value;
+            const moTa = document.getElementById('moTa').value;
+
+            if (!tenLoai) {
+                showNotification('Vui lòng nhập tên danh mục!', 'error');
+                return;
+            }
+
+            const data = {
+                TenLoai: tenLoai,
+                MoTa: moTa,
+                Icon: selectedIcon
+            };
+
+            try {
+                const url = id ? `/api/categories/${id}` : '/api/categories';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(id ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!', 'success');
+                    closeModal('categoryModal');
+                    await fetchCategories();
+                    resetCategoryForm();
+                } else {
+                    showNotification(result.message || 'Có lỗi xảy ra!', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving category:', error);
+                showNotification('Lỗi kết nối server!', 'error');
+            }
+        }
+
+        function openEditCategoryModal(id) {
+            const category = categories.find(c => c.MaLoai == id);
+            if (!category) return;
+
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa danh mục';
+            document.getElementById('categoryId').value = category.MaLoai;
+            document.getElementById('tenLoai').value = category.TenLoai;
+            document.getElementById('moTa').value = category.MoTa || '';
+            
+            // Set selected icon
+            selectedIcon = category.Icon || 'fas fa-folder';
+            updateIconPreview(selectedIcon);
+            
+            // Highlight selected icon
+            document.querySelectorAll('.icon-option').forEach(opt => {
+                if (opt.getAttribute('data-icon') === selectedIcon) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+            
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function openAddCategoryModal() {
+            resetCategoryForm();
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> Thêm danh mục mới';
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            selectedIcon = 'fas fa-folder';
+            updateIconPreview(selectedIcon);
+            
+            document.querySelectorAll('.icon-option').forEach(opt => {
+                if (opt.getAttribute('data-icon') === 'fas fa-folder') {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        function openDeleteModal(id) {
+            const category = categories.find(c => c.MaLoai == id);
+            const productCount = getProductCount(id);
+            
+            deleteId = id;
+            const messageEl = document.getElementById('deleteMessage');
+            
+            if (productCount > 0) {
+                messageEl.innerHTML = `Không thể xóa danh mục "${category.TenLoai}" vì hiện đang có <strong>${productCount} sản phẩm</strong> thuộc danh mục này. Vui lòng di chuyển hoặc xóa các sản phẩm trước.`;
+                document.querySelector('#deleteModal .modal-footer .delete').disabled = true;
+                document.querySelector('#deleteModal .modal-footer .delete').style.opacity = '0.5';
+                document.querySelector('#deleteModal .modal-footer .delete').style.cursor = 'not-allowed';
+            } else {
+                messageEl.innerHTML = `Bạn có chắc muốn xóa danh mục "${category.TenLoai}"? Hành động này không thể hoàn tác.`;
+                document.querySelector('#deleteModal .modal-footer .delete').disabled = false;
+                document.querySelector('#deleteModal .modal-footer .delete').style.opacity = '1';
+                document.querySelector('#deleteModal .modal-footer .delete').style.cursor = 'pointer';
+            }
+            
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        async function confirmDelete() {
+            if (!deleteId) return;
+
+            const category = categories.find(c => c.MaLoai == deleteId);
+            const productCount = getProductCount(deleteId);
+            
+            if (productCount > 0) {
+                showNotification('Không thể xóa danh mục đang có sản phẩm!', 'error');
+                closeModal('deleteModal');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/categories/${deleteId}`, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(`Đã xóa danh mục "${category.TenLoai}"!`, 'success');
+                    await fetchCategories();
+                    closeModal('deleteModal');
+                } else {
+                    showNotification(result.message || 'Không thể xóa danh mục!', 'error');
+                }
+            } catch (error) {
+                showNotification('Lỗi hệ thống!', 'error');
+            } finally {
+                deleteId = null;
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function logout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                window.location.href = '/logout';
+            }
+        }
+    </script>
+</body>
+</html>

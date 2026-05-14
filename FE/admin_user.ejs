@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer - N9 | Quản lý Admin & Người dùng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/admin_user.css">
+    <script src="/JS/admin_user.js" defer></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="logo-text">Computer - N9</div>
+                </div>
+                <span class="admin-badge">ADMIN PANEL</span>
+            </div>
+
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="admin-details">
+                    <h4 id="adminName">Admin N9</h4>
+                    <p id="adminEmail">admin@computern9.vn</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-category">Main</div>
+                <a href="/admin" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div></a>
+                <a href="/admin_sanpham" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-box"></i><span>Sản phẩm</span></div></a>
+                <a href="/admin_danhmuc" style="text-decoration: none;"><div class="menu-item" id="menu-categories"><i class="fas fa-list"></i><span>Danh mục</span></div></a>
+                <a href="/admin_donhang" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></div></a>
+                <div class="menu-category">Hệ thống</div>
+                <a href="/admin_user" style="text-decoration: none;"><div class="menu-item active"><i class="fas fa-users"></i><span>Người dùng</span></div></a>
+                <a href="/" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-home"></i><span>Về Trang Chủ</span></div></a>
+                <div class="menu-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title">
+                    <i class="fas fa-users"></i>
+                    Quản lý Admin & Người dùng
+                </h1>
+                <div class="top-bar-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm người dùng...">
+                        <button id="searchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="notification-btn">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUsers">--</div>
+                    <div class="stat-label">Tổng người dùng</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="activeUsers">--</div>
+                    <div class="stat-label">Đang hoạt động</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon pink">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="pendingUsers">--</div>
+                    <div class="stat-label">Chờ xác thực</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalAdmins">--</div>
+                    <div class="stat-label">Quản trị viên</div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" style="display: none; text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: var(--neon-blue);"></i>
+                <p style="margin-top: 10px;">Đang tải dữ liệu...</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('admins')">
+                    <i class="fas fa-user-tie"></i>
+                    Quản trị viên
+                </button>
+                <button class="tab-btn" onclick="switchTab('users')">
+                    <i class="fas fa-users"></i>
+                    Người dùng
+                </button>
+            </div>
+
+            <!-- Admins Tab -->
+            <div class="tab-pane active" id="adminsTab">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">
+                            <i class="fas fa-user-tie"></i>
+                            Danh sách quản trị viên
+                        </h3>
+                        <button class="add-btn" onclick="openAddAdminModal()">
+                            <i class="fas fa-plus"></i>
+                            Thêm Admin
+                        </button>
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Vai trò</th>
+                                <th>Quyền hạn</th>
+                                <th>Trạng thái</th>
+                                <th>Đăng nhập cuối</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTableBody">
+                            <tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination for Admins -->
+                    <div class="pagination" id="adminsPagination">
+                        <div class="pagination-info" id="adminsPaginationInfo"></div>
+                        <div class="pagination-buttons" id="adminsPaginationButtons"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-pane" id="usersTab">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">
+                            <i class="fas fa-users"></i>
+                            Danh sách người dùng
+                        </h3>
+                        <button class="add-btn" onclick="openAddUserModal()">
+                            <i class="fas fa-plus"></i>
+                            Thêm người dùng
+                        </button>
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Số điện thoại</th>
+                                <th>Ngày tham gia</th>
+                                <th>Tổng đơn</th>
+                                <th>Chi tiêu</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination for Users -->
+                    <div class="pagination" id="usersPagination">
+                        <div class="pagination-info" id="usersPaginationInfo"></div>
+                        <div class="pagination-buttons" id="usersPaginationButtons"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="adminModalTitle">
+                    <i class="fas fa-user-tie"></i>
+                    Thêm quản trị viên mới
+                </h3>
+                <div class="modal-close" onclick="closeAdminModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="adminForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-input" id="adminName" placeholder="Nhập họ tên" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="adminEmail" placeholder="Nhập email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-input" id="adminPassword" placeholder="Nhập mật khẩu" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vai trò</label>
+                            <select class="form-input" id="adminRole">
+                                <option value="super">Super Admin</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-input" id="adminStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Vô hiệu hóa</option>
+                        </select>
+                    </div>
+                    
+                    <input type="hidden" id="adminId" value="">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeAdminModal()">Hủy</button>
+                <button class="modal-btn save" onclick="saveAdmin()">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="userModalTitle">
+                    <i class="fas fa-user"></i>
+                    Thêm người dùng mới
+                </h3>
+                <div class="modal-close" onclick="closeUserModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-input" id="userName" placeholder="Nhập họ tên" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="userEmail" placeholder="Nhập email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-input" id="userPhone" placeholder="Nhập số điện thoại">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-input" id="userBirthday">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-input" id="userPassword" placeholder="Nhập mật khẩu">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hạng thành viên</label>
+                            <select class="form-input" id="userRank">
+                                <option value="bronze">Bronze</option>
+                                <option value="silver">Silver</option>
+                                <option value="gold">Gold</option>
+                                <option value="platinum">Platinum</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-input" id="userAddress" placeholder="Nhập địa chỉ">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-input" id="userStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Vô hiệu hóa</option>
+                            <option value="pending">Chờ xác thực</option>
+                        </select>
+                    </div>
+                    
+                    <input type="hidden" id="userId" value="">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeUserModal()">Hủy</button>
+                <button class="modal-btn save" onclick="saveUser()">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--neon-pink);"></i>
+                    Xác nhận xóa
+                </h3>
+                <div class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Bạn có chắc muốn xóa người dùng này? Hành động này không thể hoàn tác.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeDeleteModal()">Hủy</button>
+                <button class="modal-btn delete" onclick="confirmDelete()">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View User Details Modal -->
+    <div class="modal" id="viewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-user"></i>
+                    Chi tiết người dùng
+                </h3>
+                <div class="modal-close" onclick="closeViewModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeViewModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<%- include('partials/header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="checkout-header">
+            <h1 class="checkout-title">
+                <i class="fas fa-credit-card"></i>
+                Thanh toán đơn hàng
+            </h1>
+            <a href="/cart" class="back-to-cart">
+                <i class="fas fa-arrow-left"></i> Quay lại giỏ hàng
+            </a>
+        </div>
+
+        <div class="checkout-container">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3 class="summary-title">
+                    <i class="fas fa-shopping-bag"></i>
+                    Đơn hàng của bạn
+                </h3>
+                <div id="order-items-container"></div>
+                
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span id="checkout-subtotal">0₫</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Giảm giá:</span>
+                        <span id="checkout-discount">0₫</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span id="checkout-shipping">0₫</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng thanh toán:</span>
+                        <span id="checkout-total">0₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="shipping-info">
+                <h3 class="info-title">
+                    <i class="fas fa-truck"></i>
+                    Thông tin giao hàng
+                </h3>
+
+                <!-- Lựa chọn loại thông tin -->
+                <div class="info-type-selector">
+                    <div class="info-type-option active" data-type="saved" onclick="selectInfoType('saved')">
+                        <i class="fas fa-user-check"></i>
+                        <div>
+                            <strong>Thông tin của bạn</strong>
+                            <small>Sử dụng thông tin đã lưu trong tài khoản</small>
+                        </div>
+                    </div>
+                    <div class="info-type-option" data-type="new" onclick="selectInfoType('new')">
+                        <i class="fas fa-edit"></i>
+                        <div>
+                            <strong>Điền thông tin mới</strong>
+                            <small>Nhập thông tin giao hàng khác</small>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="checkout-form">
+                    <!-- Thông tin có sẵn (Saved Info) -->
+                    <div id="saved-info-section" class="info-section active">
+                        <div class="saved-addresses-list" id="saved-addresses-list">
+                            <div class="loading">Đang tải địa chỉ...</div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin mới (New Info) -->
+                    <div id="new-info-section" class="info-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user"></i>
+                                Họ và tên <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input modern-input" id="newHoTen" placeholder="Nhập họ và tên">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone"></i>
+                                Số điện thoại <span class="required">*</span>
+                            </label>
+                            <input type="tel" class="form-input modern-input" id="newSoDienThoai" placeholder="Nhập số điện thoại">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Địa chỉ giao hàng <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input modern-input" id="newDiaChi" placeholder="Nhập địa chỉ giao hàng">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-pen"></i>
+                            Ghi chú (tùy chọn)
+                        </label>
+                        <textarea class="form-textarea modern-textarea" id="ghiChu" rows="3" 
+                            placeholder="Ghi chú về địa chỉ, thời gian giao hàng..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-credit-card"></i>
+                            Phương thức thanh toán
+                        </label>
+                        <div class="payment-methods-select">
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="COD" checked>
+                                <div class="payment-method-icon"><i class="fas fa-money-bill-wave"></i></div>
+                                <div class="payment-method-info">
+                                    <strong>Thanh toán khi nhận hàng (COD)</strong>
+                                    <small>Trả tiền mặt khi nhận hàng</small>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="BANKING">
+                                <div class="payment-method-icon"><i class="fas fa-university"></i></div>
+                                <div class="payment-method-info">
+                                    <strong>Chuyển khoản ngân hàng</strong>
+                                    <small>Chuyển khoản qua ngân hàng nội địa</small>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="MOMO">
+                                <div class="payment-method-icon"><i class="fas fa-wallet"></i></div>
+                                <div class="payment-method-info">
+                                    <strong>Ví MoMo</strong>
+                                    <small>Thanh toán qua ví điện tử MoMo</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/cart'">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-circle"></i> Xác nhận đặt hàng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<style>
+    .checkout-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .checkout-title {
+        font-size: 1.8rem;
+        color: var(--neon-blue);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-family: 'Orbitron', sans-serif;
+        text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    }
+    
+    .back-to-cart {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: 0.3s;
+        padding: 8px 20px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .back-to-cart:hover {
+        color: var(--neon-blue);
+        background: rgba(0, 243, 255, 0.1);
+        transform: translateX(-5px);
+    }
+    
+    .checkout-container {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 30px;
+    }
+    
+    @media (max-width: 992px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .order-summary, .shipping-info {
+        background: linear-gradient(135deg, #13132e, #0a0a1a);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        padding: 25px;
+        transition: all 0.3s;
+    }
+    
+    .order-summary:hover, .shipping-info:hover {
+        box-shadow: 0 10px 30px rgba(0, 243, 255, 0.1);
+        border-color: rgba(0, 243, 255, 0.4);
+    }
+    
+    .summary-title, .info-title {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        color: var(--neon-blue);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+        font-family: 'Orbitron', sans-serif;
+    }
+    
+    /* Checkout Items */
+    .checkout-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s;
+    }
+    
+    .checkout-item:hover {
+        background: rgba(0, 243, 255, 0.05);
+        transform: translateX(5px);
+    }
+    
+    .checkout-item-img {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1a1a3a, #0a0a1a);
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .checkout-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .checkout-item-img i {
+        font-size: 30px;
+        color: var(--neon-blue);
+        opacity: 0.7;
+    }
+    
+    .checkout-item-info {
+        flex: 1;
+    }
+    
+    .checkout-item-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-primary);
+    }
+    
+    .checkout-item-price {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .checkout-item-total {
+        text-align: right;
+        font-weight: 700;
+        color: var(--neon-blue);
+        font-size: 1.1rem;
+    }
+    
+    .summary-details {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        color: var(--text-secondary);
+    }
+    
+    .summary-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--neon-green);
+        border-top: 1px solid rgba(0, 243, 255, 0.3);
+        margin-top: 10px;
+        padding-top: 15px;
+        text-shadow: 0 0 5px rgba(5, 255, 161, 0.3);
+    }
+    
+    /* Info Type Selector */
+    .info-type-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .info-type-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .info-type-option:hover {
+        background: rgba(0, 243, 255, 0.08);
+        transform: translateY(-2px);
+        border-color: rgba(0, 243, 255, 0.3);
+    }
+    
+    .info-type-option.active {
+        border-color: var(--neon-blue);
+        background: rgba(0, 243, 255, 0.12);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    }
+    
+    .info-type-option i {
+        font-size: 1.5rem;
+        color: var(--neon-blue);
+    }
+    
+    .info-type-option strong {
+        color: var(--text-primary);
+    }
+    
+    .info-type-option small {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        display: block;
+    }
+    
+    /* Form Elements - NÂNG CẤP */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+    
+    .form-label i {
+        color: var(--neon-blue);
+        font-size: 0.9rem;
+    }
+    
+    .modern-input {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s;
+        outline: none;
+        font-family: 'Exo 2', sans-serif;
+    }
+    
+    .modern-input:focus {
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        background: rgba(0, 243, 255, 0.05);
+    }
+    
+    .modern-input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .modern-textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s;
+        outline: none;
+        font-family: 'Exo 2', sans-serif;
+        resize: vertical;
+    }
+    
+    .modern-textarea:focus {
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        background: rgba(0, 243, 255, 0.05);
+    }
+    
+    .modern-textarea::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Saved Addresses List */
+    .saved-addresses-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .address-option {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .address-option:hover {
+        background: rgba(0, 243, 255, 0.08);
+        transform: translateX(5px);
+        border-color: rgba(0, 243, 255, 0.3);
+    }
+    
+    .address-option.selected {
+        border-color: var(--neon-green);
+        background: rgba(5, 255, 161, 0.1);
+        box-shadow: 0 0 10px rgba(5, 255, 161, 0.2);
+    }
+    
+    .address-option-radio {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--neon-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .address-option.selected .address-option-radio::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--neon-green);
+        animation: pulse 0.3s ease;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(0); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .address-option-content {
+        flex: 1;
+    }
+    
+    .address-option-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-primary);
+    }
+    
+    .address-option-detail {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+    
+    .address-default-badge {
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .no-address-message {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary);
+    }
+    
+    .no-address-message i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    
+    /* Payment Methods */
+    .payment-methods-select {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .payment-method:hover {
+        background: rgba(0, 243, 255, 0.08);
+        transform: translateY(-2px);
+        border-color: rgba(0, 243, 255, 0.3);
+    }
+    
+    .payment-method input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--neon-blue);
+    }
+    
+    .payment-method-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(185, 103, 255, 0.2));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .payment-method-icon i {
+        font-size: 1.2rem;
+        color: var(--neon-blue);
+    }
+    
+    .payment-method:hover .payment-method-icon {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.3), rgba(185, 103, 255, 0.3));
+    }
+    
+    .payment-method-info {
+        flex: 1;
+    }
+    
+    .payment-method-info strong {
+        display: block;
+        color: var(--text-primary);
+        margin-bottom: 3px;
+    }
+    
+    .payment-method-info small {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+        justify-content: flex-end;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 243, 255, 0.3);
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(0, 243, 255, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .required {
+        color: var(--neon-pink);
+        margin-left: 3px;
+    }
+    
+    .info-section {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .info-section.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Loading */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .info-type-selector {
+            flex-direction: column;
+        }
+        
+        .checkout-item {
+            flex-wrap: wrap;
+        }
+        
+        .checkout-item-total {
+            width: 100%;
+            text-align: left;
+            margin-top: 10px;
+            padding-left: 85px;
+        }
+    }
+</style>
+
+<script src="/JS/checkout.js"></script>
+<%- include('partials/footer') %>

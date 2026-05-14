@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Computer N9</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+                    <div class="logo-text">Computer - N9</div>
+                </div>
+                <span class="admin-badge">ADMIN PANEL</span>
+            </div>
+
+            <div class="admin-info">
+                <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+                <div class="admin-details">
+                    <h4>Admin N9</h4>
+                    <p>admin@computern9.vn</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-category">Main</div>
+                <a href="/admin" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div></a>
+                <a href="/admin_sanpham" style="text-decoration: none;"><div class="menu-item active"><i class="fas fa-box"></i><span>Sản phẩm</span></div></a>
+                <a href="/admin_danhmuc" style="text-decoration: none;"><div class="menu-item" id="menu-categories"><i class="fas fa-list"></i><span>Danh mục</span></div></a>
+                <a href="/admin_donhang" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></div></a>
+                <div class="menu-category">Hệ thống</div>
+                <a href="/admin_user" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-users"></i><span>Người dùng</span></div></a>
+                <a href="/" style="text-decoration: none;"><div class="menu-item"><i class="fas fa-home"></i><span>Về Trang Chủ</span></div></a>
+                <div class="menu-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></div>
+            </div>
+        </div>
+
+        <div class="admin-main">
+            <div class="top-bar">
+                <h1 class="page-title" id="pageTitle"><i class="fas fa-box"></i> Quản lý Sản phẩm</h1>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="stat-value" id="totalProducts">0</div>
+                    <div class="stat-label">Tổng sản phẩm</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ff0070;"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-value" id="lowStockProducts">0</div>
+                    <div class="stat-label">Sắp hết hàng</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #39ff14;"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="stat-value" id="inventoryValue">0</div>
+                    <div class="stat-label">Giá trị tồn kho</div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section" id="filterSection">
+                <div class="filter-group">
+                    <select class="filter-select" id="categoryFilter">
+                        <option value="all">Tất cả danh mục</option>
+                    </select>
+                    <select class="filter-select" id="stockFilter">
+                        <option value="all">Tất cả tồn kho</option>
+                        <option value="high">Còn nhiều (>50)</option>
+                        <option value="medium">Còn ít (10-50)</option>
+                        <option value="low">Sắp hết (<10)</option>
+                    </select>
+                </div>
+                <div class="action-buttons-group">
+                    <button class="add-btn" onclick="openAddProductModal()">
+                        <i class="fas fa-plus"></i> Thêm sản phẩm
+                    </button>
+                    <button class="add-btn" onclick="openAddCategoryModal()">
+                        <i class="fas fa-plus"></i> Thêm danh mục
+                    </button>
+                </div>
+            </div>
+
+            <!-- Products Table Section -->
+            <div class="table-container" id="productsSection">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Thông tin sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Giá bán</th>
+                            <th>Tồn kho</th>
+                            <th>Mô tả</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                    </tbody>
+                </table>
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Categories Table Section -->
+            <div class="table-container" id="categoriesSection" style="display: none;">
+                <div class="categories-header" style="margin-bottom: 20px;">
+                    <h3><i class="fas fa-list"></i> Danh sách danh mục</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã danh mục</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th>Số sản phẩm</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle"><i class="fas fa-plus"></i> Thêm sản phẩm mới</h3>
+                <div class="modal-close" onclick="closeModal('productModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" enctype="multipart/form-data">
+                    <input type="hidden" id="productId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tên sản phẩm <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="tenSanPham" placeholder="Nhập tên sản phẩm..." required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Danh mục <span class="required">*</span></label>
+                            <select class="form-select" id="maLoai" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Giá (VNĐ) <span class="required">*</span></label>
+                            <input type="number" class="form-input" id="gia" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Số lượng kho</label>
+                            <input type="number" class="form-input" id="soLuong" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Hình ảnh sản phẩm</label>
+                            <input type="file" class="form-input" id="hinhAnhFile" accept="image/*" onchange="previewImage(event)">
+                        </div>
+                    </div>
+
+                    <div id="imagePreviewContainer" style="margin-bottom: 15px; display: none;">
+                        <p style="font-size: 12px; color: #aaa; margin-bottom: 5px;">Xem trước ảnh:</p>
+                        <img id="imgPreview" src="" style="max-height: 150px; border-radius: 8px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả chi tiết</label>
+                        <textarea class="form-textarea" id="moTa" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeModal('productModal')">Hủy</button>
+                <button class="modal-btn save" onclick="saveProduct()">Lưu dữ liệu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle"><i class="fas fa-plus"></i> Thêm danh mục</h3>
+                <div class="modal-close" onclick="closeModal('categoryModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tên danh mục <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="tenLoai" placeholder="Nhập tên danh mục..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả danh mục</label>
+                        <textarea class="form-textarea" id="categoryMoTa" rows="3" placeholder="Nhập mô tả cho danh mục..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeModal('categoryModal')">Hủy</button>
+                <button class="modal-btn save" onclick="saveCategory()">Lưu dữ liệu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ff0070; margin-bottom: 15px;"></i>
+            <h3>Xác nhận xóa?</h3>
+            <p id="deleteMessage">Hành động này không thể hoàn tác. Dữ liệu sẽ bị xóa vĩnh viễn.</p>
+            <div class="modal-footer" style="justify-content: center; gap: 10px; margin-top: 20px;">
+                <button class="modal-btn cancel" onclick="closeModal('deleteModal')">Quay lại</button>
+                <button class="modal-btn delete" onclick="confirmDelete()">Xóa ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/JS/admin.js"></script>
+</body>
+</html>
